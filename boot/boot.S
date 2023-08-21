@@ -3,8 +3,8 @@
 .globl _start
 
 _start:
-	bl cpu_check
-	bl deltaV_start
+	bl cpu_check 		// we check if we are on the main CPU or not. Otherwise, we just halt
+	bl main
 
 cpu_check:
 	mrs x0, mpidr_el1

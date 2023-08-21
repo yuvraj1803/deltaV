@@ -1,6 +1,7 @@
 INC = ./include/
 SRC = ./src/
 BUILD = ./BUILD/
+TOOLCHAIN=aarch64-linux-gnu-
 CC = $(TOOLCHAIN)gcc
 AS = $(TOOLCHAIN)as
 LD = $(TOOLCHAIN)ld
@@ -10,24 +11,26 @@ OBJDUMP = $(TOOLCHAIN)objdump
 CFLAGS = -g -ffreestanding -nostdlib -nostartfiles -Wall -I$(INC)
 ASMFLAGS = -g -I$(INC)
 
+
+OBJ = ./build/core/main.o
+OBJ += ./build/mm/mm.o
+OBJ += ./build/boot/boot.S.o
+
 .PHONY: all
-all: kernel8.img
+all: clean kernel8.img
 
-SRC_C += ./src/core/main.c
-OBJ_C += ./build/src/core/main.o
-
-SRC_ASM += ./src/boot/boot.S
-OBJ_ASM += ./build/src/boot/boot.S.o
-
-$(OBJ_C) : $(SRC_C)
+./build/core/main.o: ./core/main.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJ_ASM) : $(SRC_ASM)
-	$(AS) $(ASM_FLAGS) -c $< -o $@
+./build/mm/mm.o: ./mm/mm.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+./build/boot/boot.S.o: ./boot/boot.S
+	$(CC) $(ASMFLAGS) -c $< -o $@
 
 
-kernel8.img : $(OBJ_C) $(OBJ_ASM)
-	$(LD) -T $(LINKER_SCRIPT) -o ./kernel8.elf $(OBJ_C) $(OBJ_ASM)
+kernel8.img : $(OBJ)
+	$(LD) -T rpi4_linker.ld -o ./kernel8.elf $(OBJ_C) $(OBJ)
 	$(OBJCOPY) ./kernel8.elf -O binary ./kernel8.img
 
 
