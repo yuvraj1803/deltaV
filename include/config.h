@@ -7,7 +7,7 @@
 #define EL3_SCR			0
 
 #define EL2_VECTOR_TABLE	0
-#define EL2_STACK_BASE		0
+#define EL2_STACK_BASE		0x80000 - 0x1
 #define EL2_HCR			0
 #define EL2_SPSR		0
 

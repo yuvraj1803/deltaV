@@ -33,14 +33,14 @@ all: clean kernel8.img
 
 
 kernel8.img : $(OBJ)
-	$(LD) -T linker.ld -o ./kernel8.elf $(OBJ_C) $(OBJ)
-	$(OBJCOPY) ./kernel8.elf -O binary ./kernel8.img
+	$(LD) -T linker.ld -o ./deltaV.elf $(OBJ_C) $(OBJ)
+	$(OBJCOPY) ./deltaV.elf -O binary ./kernel8.img
 
 
 .PHONY: clean
 clean:
-	rm -f kernel8.elf
-	rm -f kernel8.img
+	rm -f *.elf
+	rm -f *.img
 	find ./build -name '*.o' -delete 
 
 

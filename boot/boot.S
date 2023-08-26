@@ -58,12 +58,12 @@ el2_entry:
 	ldr x1, =EL2_STACK_BASE
 	mov sp, x1
 
-	ldr x1, =EL2_HCR		// setup HCR in EL2
-	msr hcr_el2, x1
+//	ldr x1, =EL2_HCR		// setup HCR in EL2
+//	msr hcr_el2, x1
 
 
-        ldr x1, =EL2_SPSR               // setup SPSR in EL2
-        msr spsr_el2, x1
+//        ldr x1, =EL2_SPSR               // setup SPSR in EL2
+//        msr spsr_el2, x1
 
 	bl delta_main
 	b halt
