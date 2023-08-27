@@ -1,4 +1,4 @@
-#include "drivers/uart/uart.h"
+#include "drivers/uart.h"
 #include "mm/mm.h"
 
 void uart_init(){
@@ -50,4 +50,15 @@ void uart_write(char* str){
 		uart_tx(*ptr);
 		ptr++;
 	}
+}
+
+void uart_write_hex(unsigned int x){
+    unsigned int n;
+    int c;
+    for(c=28;c>=0;c-=4) {
+        n=(x>>c)&0xF;
+        n+=n>9?0x37:0x30;
+        uart_tx(n);
+    }
+
 }
