@@ -18,7 +18,9 @@ OBJ += ./build/mm/mm.o
 OBJ += ./build/boot/boot.S.o
 OBJ += ./build/drivers/uart.o
 OBJ += ./build/drivers/sd.o
+OBJ += ./build/drivers/disk.o
 OBJ += ./build/lib/stdio.o
+OBJ += ./build/fs/file.o
 
 .PHONY: all
 all: kernel8.img
@@ -33,6 +35,9 @@ all: kernel8.img
 	$(CC) $(ASMFLAGS) -c $< -o $@
 
 ./build/drivers/%.o: ./drivers/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+./build/fs/%.o: ./fs/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ./build/lib/stdio.o: ./lib/src/stdio.c
