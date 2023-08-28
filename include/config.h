@@ -11,4 +11,10 @@
 #define EL2_HCR			0
 #define EL2_SPSR		0
 
+
+
+#define FS_TOTAL_FILE_DESCRIPTORS 1024
+#define FS_MAX_PATH_UNIT_LENGTH	  108
+#define FS_MAX_PATH_LENGTH        1024
+
 #endif
