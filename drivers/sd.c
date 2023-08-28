@@ -27,6 +27,7 @@
 #include "drivers/uart.h"
 #include "core/delay.h"
 #include "drivers/sd.h"
+#include "stdio.h"
 
 #define EMMC_ARG2           ((volatile unsigned int*)(PERIPH_BASE+0x00300000))
 #define EMMC_BLKSIZECNT     ((volatile unsigned int*)(PERIPH_BASE+0x00300004))
@@ -351,5 +352,8 @@ int sd_init()
     uart_write("\n");
     sd_scr[0]&=~SCR_SUPP_CCS;
     sd_scr[0]|=ccs;
+
+    log("SD initialised");
+
     return SD_OK;
 }

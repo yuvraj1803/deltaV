@@ -1,5 +1,6 @@
 #include "drivers/uart.h"
 #include "mm/mm.h"
+#include "stdio.h"
 
 void uart_init(){
 	
@@ -21,6 +22,8 @@ void uart_init(){
 	mm_w(GPPUDCLK0, 0);
 
 	mm_w(AUX_MU_CNTL_REG, 3);  //enable tx/rx
+				   //
+	log("UART initialised");
 
 }
 
