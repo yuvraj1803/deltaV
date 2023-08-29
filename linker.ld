@@ -1,7 +1,9 @@
 ENTRY(_start)
 
+
 SECTIONS{
 	. = 0x80000;
+	__delta_begin = .;
 	.text.boot : { *(.text.boot) }
 	
 	. = ALIGN(4096);
@@ -21,5 +23,11 @@ SECTIONS{
 	.bss	   : { *(.bss) }
 	. = ALIGN(4096);
 	__bss_end = .;
+
+	. = ALIGN(4096);
+	.page_map  : {*(.page_map)}
+	. = ALIGN(4096);
+
+	__delta_end = .;
 
 }
