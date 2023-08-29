@@ -177,11 +177,10 @@ int sd_cmd(unsigned int code, unsigned int arg)
  * read a block from sd card and return the number of bytes read
  * returns 0 on error.
  */
-int sd_readblock(unsigned int lba, unsigned char *buffer, unsigned int num)
+int sd_readblock(unsigned int lba, char *buffer, unsigned int num)
 {
     int r,c=0,d;
     if(num<1) num=1;
-    uart_write("sd_readblock lba ");uart_write_hex(lba);uart_write(" num ");uart_write_hex(num);uart_write("\n");
     if(sd_status(SR_DAT_INHIBIT)) {sd_err=SD_TIMEOUT; return 0;}
     unsigned int *buf=(unsigned int *)buffer;
     if(sd_scr[0] & SCR_SUPP_CCS) {
