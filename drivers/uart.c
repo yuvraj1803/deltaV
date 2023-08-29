@@ -59,10 +59,11 @@ void uart_write_size(char * str, uint64_t size){
 void uart_write(char* str){
 	char* ptr = str;
 	while(*ptr){
-		if(*ptr == '\n') *ptr = '\r';
+		if(*ptr == '\n'){
+			uart_tx('\r');
+		}
 
-		uart_tx(*ptr);
-		ptr++;
+		uart_tx(*ptr++);
 	}
 }
 
