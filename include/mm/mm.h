@@ -48,7 +48,16 @@
 #define GPPUDCLK0       	(GPIO_BASE+0x98)
 #define GPPUDCLK1       	(GPIO_BASE+0x9C)
 
+#define	HEAP_LOW		0x400000
+#define HEAP_HIGH		0x3F000000
+#define PAGING_MEM		(HEAP_HIGH - HEAP_LOW)
+#define PAGE_SIZE		0x1000
+#define TOTAL_PAGES		(PAGING_MEM/PAGE_SIZE)
+
+
 void 	 mm_w(uint64_t reg, uint64_t val);
 uint64_t mm_r(uint64_t reg);
+void* malloc(uint64_t size);
+void free(void* base);
 
 #endif
