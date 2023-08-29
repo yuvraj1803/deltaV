@@ -1,6 +1,7 @@
 #include "drivers/uart.h"
 #include "mm/mm.h"
 #include "stdio.h"
+#include <stdint.h>
 
 void uart_init(){
 	
@@ -42,7 +43,17 @@ char uart_rx(){
 	
 	if(mm_r(AUX_MU_IO_REG) == '\r') return '\n'; // conv carriage ret into newline
 
-	return mm_r(AUX_MU_IO_REG);
+	return mm_r(AUX_MU_IO_REG & 0xFF);
+}
+
+void uart_write_size(char * str, uint64_t size){
+	char *ptr = str;
+	while(size--){
+ 	       if(*ptr == '\n') *ptr = '\r';
+
+               uart_tx(*ptr);
+               ptr++;
+	}
 }
 
 void uart_write(char* str){
