@@ -25,8 +25,10 @@ SECTIONS{
 	__bss_end = .;
 
 	. = ALIGN(4096);
-	.page_map  : {*(.page_map)}
+	__page_map_start = .;
+	.page_map  : { *(.page_map) }
 	. = ALIGN(4096);
+	__page_map_end = .;
 
 	__delta_end = .;
 
