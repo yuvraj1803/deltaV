@@ -9,10 +9,12 @@
 #define PAGE_IS_FIRST		0b1000
 
 
-uint64_t heap_entries[TOTAL_PAGES];
+uint64_t __attribute__((section(".page_map"))) page_map[TOTAL_PAGES];
 
 void heap_init(){
 	memset(&heap_entries, PAGE_FREE, sizeof(heap_entries));
+
+
 }
 
 
