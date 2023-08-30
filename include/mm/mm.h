@@ -54,7 +54,7 @@
 #define PAGE_SIZE		0x1000
 #define TOTAL_PAGES		(PAGING_MEM/PAGE_SIZE)
 
-
+void heap_init();
 void 	 mm_w(uint64_t reg, uint64_t val);
 uint64_t mm_r(uint64_t reg);
 void* malloc(uint64_t size);
