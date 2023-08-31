@@ -17,16 +17,14 @@ OBJ += ./build/mm/mm.o
 OBJ += ./build/boot/boot.S.o
 OBJ += ./build/drivers/uart.o
 OBJ += ./build/drivers/sd.o
-OBJ += ./build/drivers/disk.o
 OBJ += ./build/lib/stdio.o
 OBJ += ./build/lib/memory.o
 OBJ += ./build/lib/string.o
-OBJ += ./build/fs/file.o
-OBJ += ./build/fs/fat16.o
-OBJ += ./build/fs/parser.o
+OBJ += ./build/fs/ff.o
+OBJ += ./build/fs/diskio.o
 
 .PHONY: all
-all: SD_with_guests kernel8.img
+all: sdcard kernel8.img
 
 ./build/core/%.o: ./core/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -52,34 +50,39 @@ kernel8.img : $(OBJ)
 
 
 .PHONY: run
-run: 	SD_with_guests kernel8.img qemu
+run: 	sdcard kernel8.img qemu
 
 .PHONY: debug
-debug:	SD_with_guests kernel8.img 
+debug:	sdcard kernel8.img 
 	qemu-system-aarch64 -M raspi3b -nographic -serial null -serial mon:stdio -m 1024 -kernel ./kernel8.img -drive file=./SD_with_guests.img,if=sd,format=raw -s -S
 
 
 .PHONY: qemu
 qemu: 
-	qemu-system-aarch64 -M raspi3b -nographic -serial null -serial mon:stdio -m 1024 -kernel ./kernel8.img -drive file=./SD_with_guests.img,if=sd,format=raw
+	qemu-system-aarch64 -M raspi3b -nographic -serial null -serial mon:stdio -m 1024 -kernel ./kernel8.img -drive file=./sdcard.img,if=sd,format=raw
 
-.PHONY: SD_with_guests
-SD_with_guests:
-	dd if=/dev/zero count=128 bs=1M > SD_with_guests.img
-	(echo o; echo n; echo p; echo 1; echo 2048; echo 99999; echo t; echo 6; echo w; echo q) | sudo fdisk SD_with_guests.img
-	mkfs.fat -F 16 SD_with_guests.img
-	sudo mkdir /mnt/delta_guests
-	sudo mount SD_with_guests.img /mnt/delta_guests
-	sudo cp -r ./guests /mnt/delta_guests
-	sudo umount /mnt/delta_guests
-	sudo rmdir /mnt/delta_guests
+.PHONY: sdcard
+sdcard:
+	sudo modprobe nbd max_part=8
+	qemu-img create sdcard.img 128m
+	sudo qemu-nbd -c /dev/nbd0 --format=raw sdcard.img 
+	(echo o; echo n; echo p; echo 1; echo ; echo ;echo w; echo q) | sudo fdisk /dev/nbd0
+	sudo mkfs.fat -F32 /dev/nbd0p1
+	mkdir temp
+	sudo mount -o user /dev/nbd0p1 temp/
+	sudo cp -r ./guests temp/
+	sleep 1s
+	sudo umount temp/
+	rmdir temp/
+	sudo qemu-nbd -d /dev/nbd0
+	(echo t; echo c; echo w) | sudo fdisk sdcard.img
 
 .PHONY: clean
 clean:
 	rm -f *.elf
 	rm -f *.img
 	find ./build -name '*.o' -delete 
-
+	sudo qemu-nbd -d /dev/nbd0
 
 
 		
