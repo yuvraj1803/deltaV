@@ -32,4 +32,11 @@ SECTIONS{
 
 	__delta_end = .;
 
+	/DISCARD/ : {
+		*(.comment)
+		*(.gnu*)
+		*(.note*)
+		*(eh_frame*)
+	}
+
 }
