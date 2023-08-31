@@ -5,7 +5,7 @@
  */
 
 #include "string.h"
-
+#include <stddef.h>
 
 // returns the length of a given string
 uint32_t strlen(const char* str){
@@ -67,4 +67,18 @@ int strncpy(char* tgt, char* src, uint32_t len){
     return written;
 
 }
+char *strchr(const char *s, int c)
+{
+        char *p = (char *)s;
+
+        while (*p != '\0' && *p != c)
+                p++;
+
+        if (*p == '\0')
+                return NULL;
+
+        else
+                return p;
+}
+
 
