@@ -21,11 +21,13 @@
 /* Get Drive Status                                                      */
 /*-----------------------------------------------------------------------*/
 
+static DSTATUS stat = STA_NOINIT;
+
 DSTATUS disk_status (
 	BYTE pdrv		/* Physical drive nmuber to identify the drive */
 )
 {
-	return STA_NOINIT;
+	return stat;
 }
 
 
@@ -39,6 +41,7 @@ DSTATUS disk_initialize (
 )
 {
 	if(sd_init() < 0) return RES_ERROR;
+	stat = 0;;
 
 	return RES_OK;
 	
