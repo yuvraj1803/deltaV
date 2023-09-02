@@ -54,8 +54,7 @@ run: 	sdcard kernel8.img qemu
 
 .PHONY: debug
 debug:	sdcard kernel8.img 
-	qemu-system-aarch64 -M raspi3b -nographic -serial null -serial mon:stdio -m 1024 -kernel ./kernel8.img -drive file=./SD_with_guests.img,if=sd,format=raw -s -S
-
+	qemu-system-aarch64 -M raspi3b -nographic -serial null -serial mon:stdio -m 1024 -kernel ./kernel8.img -drive file=./sdcard.img,if=sd,format=raw -s -S
 
 .PHONY: qemu
 qemu: 
@@ -68,14 +67,14 @@ sdcard:
 	sudo qemu-nbd -c /dev/nbd0 --format=raw sdcard.img 
 	(echo o; echo n; echo p; echo 1; echo ; echo ;echo w; echo q) | sudo fdisk /dev/nbd0
 	sudo mkfs.fat -F32 /dev/nbd0p1
-	mkdir temp
+	mkdir temp || true
 	sudo mount -o user /dev/nbd0p1 temp/
-	sudo cp -r ./guests temp/
+	sudo cp  -r ./guests temp/
 	sleep 1s
 	sudo umount temp/
-	rmdir temp/
+	rmdir temp/ || true
 	sudo qemu-nbd -d /dev/nbd0
-	(echo t; echo c; echo w) | sudo fdisk sdcard.img
+	(echo t; echo c; echo w; echo q) | sudo fdisk sdcard.img
 
 .PHONY: clean
 clean:
