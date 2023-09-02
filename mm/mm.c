@@ -14,6 +14,7 @@ uint64_t __attribute__((section(".page_map"))) page_map[TOTAL_PAGES];
 
 void heap_init(){
 	for(int i=0;i<TOTAL_PAGES;i++) page_map[i] = PAGE_FREE;
+	log("HEAP initialised");
 }
 
 
