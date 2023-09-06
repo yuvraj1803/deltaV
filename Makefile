@@ -13,6 +13,7 @@ ASMFLAGS = -g -I$(INC)
 
 OBJ += ./build/core/main.o
 OBJ += ./build/core/delay.o
+OBJ += ./build/core/irq.S.o
 OBJ += ./build/mm/mm.o
 OBJ += ./build/boot/boot.S.o
 OBJ += ./build/drivers/uart.o
@@ -32,7 +33,10 @@ all: sdcard kernel8.img
 ./build/mm/%.o: ./mm/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-./build/boot/boot.S.o: ./boot/boot.S
+./build/boot/%.S.o: ./boot/%.S
+	$(CC) $(ASMFLAGS) -c $< -o $@
+
+./build/core/%.S.o : ./core/%.S
 	$(CC) $(ASMFLAGS) -c $< -o $@
 
 ./build/drivers/%.o: ./drivers/%.c
@@ -76,12 +80,17 @@ sdcard:
 	sudo qemu-nbd -d /dev/nbd0
 	(echo t; echo c; echo w; echo q) | sudo fdisk sdcard.img
 
+.PHONY: objdump
+objdump: kernel8.img
+	$(OBJDUMP) -D deltaV.elf > deltaV.list
+
 .PHONY: clean
 clean:
 	rm -f *.elf
 	rm -f *.img
 	find ./build -name '*.o' -delete 
 	sudo qemu-nbd -d /dev/nbd0
+	rm -rf *.list
 
 
 		
