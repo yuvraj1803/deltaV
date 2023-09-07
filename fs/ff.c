@@ -25,6 +25,12 @@
 #include "fs/ffconf.h"
 #include "fs/diskio.h"		/* Declarations of device I/O functions */
 
+FATFS fat;
+
+void fs_init(){
+	f_mount(&fat, "/", 1);
+}
+
 
 /*--------------------------------------------------------------------------
 

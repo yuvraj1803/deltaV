@@ -34,6 +34,8 @@ extern "C" {
 #endif
 
 
+void fs_init();
+
 /* Integer types used for FatFs API */
 
 #if defined(_WIN32)		/* Windows VC++ (for development only) */
