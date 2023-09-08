@@ -35,12 +35,6 @@ bss_init:
 	ret
 
 el3_entry:
-	ldr x1,=EL3_STACK_BASE 	// setup EL3 stack
-	mov sp, x1
-
-	ldr x1, =EL3_VECTOR_TABLE	// setup EL3 vector table
-	msr vbar_el3 ,x1
-
 
 	ldr x1, =EL3_SCR		//setup SCR in EL3
 	msr scr_el3, x1
@@ -58,8 +52,8 @@ el2_entry:
 	ldr x1, =EL2_STACK_BASE
 	mov sp, x1
 
-//	ldr x1, =EL2_HCR		// setup HCR in EL2
-//	msr hcr_el2, x1
+	ldr x1, =EL2_HCR		// setup HCR in EL2
+	msr hcr_el2, x1
 
 
 //        ldr x1, =EL2_SPSR               // setup SPSR in EL2

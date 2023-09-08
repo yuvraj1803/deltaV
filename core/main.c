@@ -4,15 +4,15 @@
 #include "mm/mm.h"
 #include "fs/diskio.h"
 #include "fs/ff.h"
-
-FATFS fatfs;
+#include "core/irq.h"
 
 void delta_main(void){
 	
 	uart_init();
 	heap_init();
+	fs_init();
+	irq_init();
 
-	f_mount(&fatfs, "/",0);
 	unsigned char buf[100];
 	FIL fp;
 	FRESULT r;
