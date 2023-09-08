@@ -14,8 +14,10 @@
 #define EL2_HCR			 (1 << 21) |  (1 << 18) |  (1 << 17) |  (1 << 16) |  (1 << 14) |  (1 << 13) |  (0 << 34) |  (1 << 31) |  (0 << 27) |  (1 << 5) |  (1 << 4) |  (1 << 3) |  (1 << 1) |  (1 << 0)
 //				  TACR	        TID3   	      TID2        TID1        TWE           TWI            E2H         RW           TGE          AMO         IMO         FMO        SWIO       VM
 #define EL2_SPSR		0
-#define EL2_VTCR
-#define EL2_SCTLR
+#define EL2_VTCR		(1 << 30) | (1 << 29) | (0 << 19) | (2 << 16) | (0 << 14) | (3 << 12) | (0 << 10) | (0 << 8) | (1 << 6) | (64 - 38)
+//				   NSA         NSW        VS          PS           TG0        SH0         ORGN0        IRGN0     SL0        T0SZ
+#define EL2_SCTLR		(0 << 25) | (0 < 12) | (0 << 2) | (0 << 0)
+// 				   EE      I-CACHE->0  D-CACHE->0  MMU-OFF
 
 
 #define FS_TOTAL_FILE_DESCRIPTORS 1024
