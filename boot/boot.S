@@ -3,6 +3,7 @@
 .section ".text.boot"
 
 .globl _start
+.globl halt
 
 _start:
 	bl cpu_check 		// we check if we are on the main CPU or not. Otherwise, we just halt
@@ -55,9 +56,11 @@ el2_entry:
 	ldr x1, =EL2_HCR		// setup HCR in EL2
 	msr hcr_el2, x1
 
+        ldr x1, =EL2_SPSR               // setup SPSR in EL2
+        msr spsr_el2, x1
 
-//        ldr x1, =EL2_SPSR               // setup SPSR in EL2
-//        msr spsr_el2, x1
+//	ldr x1, = EL2_SCTLR_NO_MMU
+//	msr sctlr_el2, x1		// EL2 SCTLR, initially MMU is disabled
 
 	bl delta_main
 	b halt
