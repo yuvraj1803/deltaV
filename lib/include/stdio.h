@@ -3,5 +3,6 @@
 
 void log(char* str);
 void panic(char* str);
+void printf(char* fmt, ...);
 
 #endif
