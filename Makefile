@@ -14,6 +14,8 @@ ASMFLAGS = -g -I$(INC)
 OBJ += ./build/core/main.o
 OBJ += ./build/core/delay.o
 OBJ += ./build/core/irq.S.o
+OBJ += ./build/core/exceptions.S.o
+OBJ += ./build/core/irq.o
 OBJ += ./build/mm/mm.o
 OBJ += ./build/boot/boot.S.o
 OBJ += ./build/drivers/uart.o
@@ -21,6 +23,7 @@ OBJ += ./build/drivers/sd.o
 OBJ += ./build/lib/stdio.o
 OBJ += ./build/lib/memory.o
 OBJ += ./build/lib/string.o
+OBJ += ./build/lib/stdlib.o
 OBJ += ./build/fs/ff.o
 OBJ += ./build/fs/diskio.o
 
@@ -89,6 +92,7 @@ clean:
 	rm -f *.elf
 	rm -f *.img
 	find ./build -name '*.o' -delete 
+	find ./build -name '*.d' -delete
 	sudo qemu-nbd -d /dev/nbd0
 	rm -rf *.list
 
