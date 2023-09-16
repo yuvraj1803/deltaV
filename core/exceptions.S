@@ -6,7 +6,7 @@
 	mrs x1, esr_el2
 	mrs x2, elr_el2
 	mrs x3, far_el2
-	bl log_unsupported_interrupt
+	bl log_unsupported_exception
 	b halt 
 .endm
 

@@ -6,12 +6,16 @@
 #include "fs/ff.h"
 #include "core/irq.h"
 
+
 void delta_main(void){
 	
 	uart_init();
 	heap_init();
 	fs_init();
 	irq_init();
+	
+	printf("hello world %s", "yuvrj");
+	while(1);
 
 	unsigned char buf[100];
 	FIL fp;
