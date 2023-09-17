@@ -15,6 +15,7 @@ OBJ += ./build/core/main.o
 OBJ += ./build/core/delay.o
 OBJ += ./build/core/irq.S.o
 OBJ += ./build/core/exceptions.S.o
+OBJ += ./build/core/misc.S.o
 OBJ += ./build/core/irq.o
 OBJ += ./build/mm/mm.o
 OBJ += ./build/boot/boot.S.o
