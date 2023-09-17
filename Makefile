@@ -20,6 +20,7 @@ OBJ += ./build/mm/mm.o
 OBJ += ./build/boot/boot.S.o
 OBJ += ./build/drivers/uart.o
 OBJ += ./build/drivers/sd.o
+OBJ += ./build/drivers/timer.o
 OBJ += ./build/lib/stdio.o
 OBJ += ./build/lib/memory.o
 OBJ += ./build/lib/string.o

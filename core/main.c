@@ -1,6 +1,7 @@
 #include "stdio.h"
 #include "drivers/uart.h"
 #include "drivers/sd.h"
+#include "drivers/timer.h"
 #include "mm/mm.h"
 #include "fs/diskio.h"
 #include "fs/ff.h"
@@ -12,6 +13,7 @@ void delta_main(void){
 	uart_init();
 	heap_init();
 	fs_init();
+	timer_init();
 	irq_init();
 	interrupt_controller_init();
 	
