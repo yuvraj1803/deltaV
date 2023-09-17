@@ -67,10 +67,11 @@ void uart_write(char* str){
 	}
 }
 
-void uart_write_hex(unsigned int x){
+void uart_write_hex(unsigned long long x){
     unsigned int n;
     int c;
-    for(c=28;c>=0;c-=4) {
+    uart_write("0x");
+    for(c=60;c>=0;c-=4) {
         n=(x>>c)&0xF;
         n+=n>9?0x37:0x30;
         uart_tx(n);
