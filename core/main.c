@@ -13,6 +13,7 @@ void delta_main(void){
 	heap_init();
 	fs_init();
 	irq_init();
+	interrupt_controller_init();
 	
 	printf("hello world %s", "yuvrj");
 	while(1);
