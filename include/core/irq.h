@@ -10,6 +10,6 @@ void __enable_irq();
 void handle_irq();
 void handle_sync(uint64_t esr_el2, uint64_t elr_el2, uint64_t far_el2, uint64_t hvc_number);
 void log_unsupported_exception(uint64_t exception_type, uint64_t esr_el2, uint64_t elr_el2, uint64_t far_el2);
-
+void interrupt_controller_init();
 
 #endif
