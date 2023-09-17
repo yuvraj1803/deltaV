@@ -2,6 +2,7 @@
 #include "mm/mm.h"
 #include <stdint.h>
 #include "stdio.h"
+#include "drivers/timer.h"
 
 
 const char* exception_info[] = {
@@ -28,12 +29,16 @@ const char* exception_info[] = {
 
 // refer to bcm2835 reference manual for more details about these constants
 
-#define ENABLE_IRQs_1		(PERIPH_BASE + 0xB210)
-#define ENABLE_IRQs_2		(PERIPH_BASE + 0xB214)
-#define SYSTEM_TIMER_MATCH_1	(1U << 1)
-#define SYSTEM_TIMER_MATCH_3	(1U << 3)
-#define AUX_INT			(1U << 29)
-
+#define INTERRUPT_CONTROLLER_BASE	(PERIPH_BASE + 0xB000)
+#define ENABLE_IRQs_1			(INTERRUPT_CONTROLLER_BASE + 0x210)
+#define ENABLE_IRQs_2			(INTERRUPT_CONTROLLER_BASE + 0x214)
+#define DISABLE_IRQs_1			(INTERRUPT_CONTROLLER_BASE + 0x21C)
+#define DISABLE_IRQs_2			(INTERRUPT_CONTROLLER_BASE + 0x220)
+#define IRQ_PENDING_1			(INTERRUPT_CONTROLLER_BASE + 0x204)
+#define IRQ_PENDING_2			(INTERRUPT_CONTROLLER_BASE + 0x208)
+#define SYSTEM_TIMER_MATCH_1		(1U << 1)
+#define SYSTEM_TIMER_MATCH_3		(1U << 3)
+#define AUX_INT				(1U << 29)
 
 
 void interrupt_controller_init(){
@@ -47,13 +52,15 @@ void log_unsupported_exception(uint64_t exception_type,
 			       uint64_t elr_el2,
 			       uint64_t far_el2){
 
-	printf("[UNCAUGHT EXCEPTION] : %s [ESR] : %d [ELR] : %d [FAR] : %d \n", exception_info[exception_type], esr_el2, elr_el2, far_el2);
+	printf("[UNCAUGHT EXCEPTION] : %s [ESR] : %x [ELR] : %x [FAR] : %x \n", exception_info[exception_type], esr_el2, elr_el2, far_el2);
 }
 
 
 void handle_irq(){
+	uint32_t pending = mm_r(IRQ_PENDING_1);
+	if(pending & SYSTEM_TIMER_MATCH_1) system_timer_1_handler();
+	if(pending & SYSTEM_TIMER_MATCH_3) system_timer_3_handler();
 
 }
 void handle_sync(uint64_t esr_el2, uint64_t elr_el2, uint64_t far_el2, uint64_t hvc_number){
-
 }
