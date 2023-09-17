@@ -1,5 +1,6 @@
 #include "drivers/timer.h"
 #include "mm/mm.h"
+#include "stdio.h"
 
 #define TIMER_BASE	(PERIPH_BASE + 0x3000)
 
@@ -18,6 +19,20 @@
 const uint32_t timer_interval = 100000;
 
 
+void timer_info(){
+
+}
+
 void timer_init(void){
-	mm_w(TIMER_CS,	(mm_r(TIMER_CLO) & 0xffffffff) + timer_interval);
+	mm_w(TIMER_C1,	(mm_r(TIMER_CLO) & 0xffffffff) + timer_interval);
+}
+
+void system_timer_1_handler(){
+	mm_w(TIMER_CS, mm_r(TIMER_CS) | TIMER_CS_M1);
+        mm_w(TIMER_C1,  (mm_r(TIMER_CLO) & 0xffffffff) + timer_interval);
+	printf("hello\n");
+}
+
+void system_timer_3_handler(){
+
 }
