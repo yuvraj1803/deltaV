@@ -13,6 +13,7 @@
 .macro handle_irq_interrupt
 // 	switch_to_hypervisor
 	bl handle_irq
+	eret // eret only for now. remove this after switch_to_vm is implemented.
 //	switch_to_vm
 .endm
 
