@@ -59,9 +59,27 @@ el2_entry:
         ldr x1, =EL2_SPSR               // setup SPSR in EL2
         msr spsr_el2, x1
 
-//	ldr x1, = EL2_SCTLR_NO_MMU
-//	msr sctlr_el2, x1		// EL2 SCTLR, initially MMU is disabled
+/*
+	// load page dir
+	
+	ldr x0, =(TCR_EL2)
+	msr tcr_el2, x0
 
+	
+//	ldr x0, =(VTCR_VALUE)
+	msr vtcr_el2, x0
+
+	ldr x0, =(MAIR_EL2)
+	msr mair_el2, x0
+
+	tlbi alle1
+
+	ldr x1, = EL2_SCTLR_WITH_MMU
+	dsb ish
+	isb
+	msr sctlr_el2, x1		// EL2 SCTLR, initially MMU is disabled
+	isb
+*/
 	bl delta_main
 	b halt
 
