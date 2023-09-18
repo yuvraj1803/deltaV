@@ -16,23 +16,25 @@
 #define TIMER_CS_M2	(1U << 2)
 #define TIMER_CS_M3	(1U << 3)
 
-const uint32_t timer_interval = 100000;
+const uint32_t timer_interval = 400000;
 
 
 void timer_info(){
-
+	printf("CS: %x\n", mm_r32(TIMER_CS));
+	printf("CLO: %x\n", mm_r32(TIMER_CLO));
+	printf("CHI: %x\n", mm_r32(TIMER_CHI));
 }
-
 void timer_init(void){
-	mm_w(TIMER_C1,	(mm_r(TIMER_CLO) & 0xffffffff) + timer_interval);
+	mm_w32(TIMER_C1,mm_r32(TIMER_CLO) + timer_interval);
 }
 
 void system_timer_1_handler(){
-	mm_w(TIMER_CS, mm_r(TIMER_CS) | TIMER_CS_M1);
-        mm_w(TIMER_C1,  (mm_r(TIMER_CLO) & 0xffffffff) + timer_interval);
+
+	mm_w32(TIMER_C1,  mm_r32(TIMER_CLO) + timer_interval);
+	mm_w32(TIMER_CS, TIMER_CS_M1);
 	printf("hello\n");
 }
 
 void system_timer_3_handler(){
-
+	
 }

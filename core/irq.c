@@ -44,11 +44,10 @@ const char* exception_info[] = {
 
 
 void interrupt_controller_init(){
-
-	mm_w(ENABLE_IRQs_1, mm_r(ENABLE_IRQs_1) | SYSTEM_TIMER_MATCH_1);
-	mm_w(ENABLE_IRQs_1, mm_r(ENABLE_IRQs_1) | SYSTEM_TIMER_MATCH_3);
-        mm_w(ENABLE_IRQs_1, mm_r(ENABLE_IRQs_1) | AUX_INT);
-	mm_w(FIQ_CONTROL, mm_r(FIQ_CONTROL) & ~(FIQ_ENABLE)); // disable FIQ
+	mm_w32(FIQ_CONTROL, 0xc1);
+	mm_w32(ENABLE_IRQs_1, SYSTEM_TIMER_MATCH_1);
+	mm_w32(ENABLE_IRQs_1, SYSTEM_TIMER_MATCH_3);
+        mm_w32(ENABLE_IRQs_1, AUX_INT);
 }
 
 void log_unsupported_exception(uint64_t exception_type,
