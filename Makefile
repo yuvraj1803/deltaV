@@ -18,6 +18,7 @@ OBJ += ./build/core/exceptions.S.o
 OBJ += ./build/core/misc.S.o
 OBJ += ./build/core/irq.o
 OBJ += ./build/mm/mm.o
+OBJ += ./build/mm/mm.S.o
 OBJ += ./build/boot/boot.S.o
 OBJ += ./build/drivers/uart.o
 OBJ += ./build/drivers/sd.o
@@ -43,6 +44,9 @@ all: sdcard kernel8.img
 
 ./build/core/%.S.o : ./core/%.S
 	$(CC) $(ASMFLAGS) -c $< -o $@
+
+./build/mm/%.S.o: ./mm/%.S
+	$(CC) $(ASMFLAGS) -c $< -o $@	
 
 ./build/drivers/%.o: ./drivers/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
