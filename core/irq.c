@@ -36,15 +36,19 @@ const char* exception_info[] = {
 #define DISABLE_IRQs_2			(INTERRUPT_CONTROLLER_BASE + 0x220)
 #define IRQ_PENDING_1			(INTERRUPT_CONTROLLER_BASE + 0x204)
 #define IRQ_PENDING_2			(INTERRUPT_CONTROLLER_BASE + 0x208)
+#define FIQ_CONTROL			(INTERRUPT_CONTROLLER_BASE + 0x20C)
 #define SYSTEM_TIMER_MATCH_1		(1U << 1)
 #define SYSTEM_TIMER_MATCH_3		(1U << 3)
 #define AUX_INT				(1U << 29)
+#define FIQ_ENABLE			(1U << 7)
 
 
 void interrupt_controller_init(){
+
 	mm_w(ENABLE_IRQs_1, mm_r(ENABLE_IRQs_1) | SYSTEM_TIMER_MATCH_1);
 	mm_w(ENABLE_IRQs_1, mm_r(ENABLE_IRQs_1) | SYSTEM_TIMER_MATCH_3);
         mm_w(ENABLE_IRQs_1, mm_r(ENABLE_IRQs_1) | AUX_INT);
+	mm_w(FIQ_CONTROL, mm_r(FIQ_CONTROL) & ~(FIQ_ENABLE)); // disable FIQ
 }
 
 void log_unsupported_exception(uint64_t exception_type,
