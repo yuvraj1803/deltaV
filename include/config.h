@@ -1,6 +1,11 @@
 #ifndef __config_h__
 #define __config_h__
 
+#define CONFIG_VM_CONSOLE_BUFFER_SIZE	512
+#define CONFIG_MAX_VMs					256
+
+
+
 
 // EL3
 #define EL3_SCR 	/*RW*/	       (1U << 10)  |\
