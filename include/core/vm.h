@@ -5,6 +5,8 @@
 #include "config.h"
 #include "mm/paging.h"
 
+struct vm* new_vm(char* name, uint64_t sp, uint64_t entry, uint64_t base);
+
 
 struct vm_info{
 	uint32_t quanta_remaining;
@@ -34,7 +36,7 @@ struct vcpu{
 		uint64_t sp; 
 		uint64_t pc;
 
-	};
+	}context;
 
 	struct sysregs{
 	    uint64_t sctlr_el1;
@@ -101,7 +103,7 @@ struct vcpu{
 		uint64_t cntv_ctl_el0;
 		uint64_t cntv_cval_el0;
 		uint64_t cntv_tval_el0;
-	}
+	} sysregs;
 };
 
 struct vm{
