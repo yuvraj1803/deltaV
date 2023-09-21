@@ -8,7 +8,7 @@
 #define VM_WAITING 0
 #define VM_RUNNING 1
 
-struct vm* new_vm(char* name, uint64_t sp, uint64_t entry, uint64_t base);
+struct vm* vm_init(char* name, uint64_t sp, uint64_t entry, uint64_t base);
 
 
 struct vm_info{
@@ -160,6 +160,8 @@ struct vm{
 	struct vcpu cpu;
 	struct vm_console console;
 	struct vm_info info;
+
+	uint64_t* vmdata;
 
 };
 
