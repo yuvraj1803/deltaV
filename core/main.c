@@ -6,31 +6,30 @@
 #include "fs/diskio.h"
 #include "fs/ff.h"
 #include "core/irq.h"
+#include "core/misc.h"
+#include "core/sched.h"
+#include "core/vm.h"
+
 
 
 void delta_main(void){
 	
+	__disable_irq();
+		
 	uart_init();
 	heap_init();
 	fs_init();
-	timer_init();
 	irq_init();
+	mmu_init();
 	interrupt_controller_init();
-	
-	printf("hello world %s", "yuvrj");
-	while(1);
+	timer_init();
+	sched_init();
 
-	unsigned char buf[100];
-	FIL fp;
-	FRESULT r;
-	r = f_open(&fp, "/guests/hw.bin", FA_READ);
-	if(r){
-		log("unable to open file");
-		while(1);
+	vm_init("/guests/hw.bin", 0,0,0);
+
+	while(1){
+		__disable_irq();
+		schedule();
+		__enable_irq();
 	}
-	f_read(&fp, buf, 100, 0);
-
-	log(buf);
-	
-	while(1);
 }
