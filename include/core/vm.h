@@ -5,6 +5,9 @@
 #include "config.h"
 #include "mm/paging.h"
 
+#define VM_WAITING 0
+#define VM_RUNNING 1
+
 struct vm* new_vm(char* name, uint64_t sp, uint64_t entry, uint64_t base);
 
 
@@ -20,6 +23,7 @@ struct vm_console{
 };
 
 struct vcpu{
+
 	struct context{
 
 		uint64_t x19;
@@ -104,6 +108,48 @@ struct vcpu{
 		uint64_t cntv_cval_el0;
 		uint64_t cntv_tval_el0;
 	} sysregs;
+
+	struct interrupt_regs{
+		uint32_t irq_basic_pending;
+		uint32_t irq_pending_1;
+		uint32_t irq_pending_2;
+		uint32_t fiq_control;
+		uint32_t enable_irqs_1;
+		uint32_t enable_irqs_2;
+		uint32_t enable_basic_irqs;
+		uint32_t disable_irqs_1;
+		uint32_t disable_irqs_2;
+		uint32_t disable_basic_irqs;
+
+	}interrupt_regs;
+
+	struct aux_regs{
+		uint32_t aux_irq;
+		uint32_t aux_enables;
+		uint32_t aux_mu_io_reg;
+		uint32_t aux_mu_ier_reg;
+		uint32_t aux_mu_iir_reg;
+		uint32_t aux_mu_lcr_reg;
+		uint32_t aux_mu_mcr_reg;
+		uint32_t aux_mu_lsr_reg;
+		uint32_t aux_mu_scratch;
+		uint32_t aux_mu_cntl_reg;
+		uint32_t aux_mu_stat_reg;
+		uint32_t aux_mu_baud_reg;
+	} aux_regs;
+
+	struct system_timer_regs{
+		uint64_t virtual_timer;
+		uint32_t cs;
+		uint32_t c0;
+		uint32_t c1;
+		uint32_t c2;
+		uint32_t c3;
+
+	} system_timer_regs;
+
+
+
 };
 
 struct vm{
