@@ -3,7 +3,7 @@ ENTRY(_start)
 
 SECTIONS{
 	. = 0x80000;
-	__delta_begin = .;
+	__delta_start = .;
 	.text.boot : { *(.text.boot) }
 	
 	. = ALIGN(4096);
@@ -31,6 +31,12 @@ SECTIONS{
 	__page_map_end = .;
 
 	__delta_end = .;
+	. = ALIGN(4096);
+	__page_dir_start = .;
+	.page_dir : { *(.page_dir) }
+	. = ALIGN(4096);
+	__page_dir_end = .;
+	
 
 	/DISCARD/ : {
 		*(.comment)
