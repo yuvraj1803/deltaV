@@ -1,5 +1,6 @@
 #include "drivers/timer.h"
 #include "mm/mm.h"
+#include "config.h"
 #include "stdio.h"
 
 #define TIMER_BASE	(PERIPH_BASE + 0x3000)
@@ -16,8 +17,8 @@
 #define TIMER_CS_M2	(1U << 2)
 #define TIMER_CS_M3	(1U << 3)
 
-const uint32_t timer_interval = 400000;
-
+const uint32_t timer_interval = CONFIG_SCHED_QUANTA * (1000000/1000); // timer runs at 1MHz
+// (1000000/1000) is number of cycles in 1 ms)
 
 void timer_info(){
 	printf("CS: %x\n", mm_r32(TIMER_CS));
