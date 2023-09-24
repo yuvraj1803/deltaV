@@ -15,12 +15,12 @@
 void delta_main(void){
 	
 	__disable_irq();
-		
+	
+	mmu_init();
 	uart_init();
 	heap_init();
 	fs_init();
 	irq_init();
-	mmu_init();
 	interrupt_controller_init();
 	timer_init();
 	sched_init();
