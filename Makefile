@@ -23,6 +23,7 @@ OBJ += ./build/core/vm.o
 OBJ += ./build/mm/mm.o
 OBJ += ./build/mm/mm.S.o
 OBJ += ./build/mm/paging.o
+OBJ += ./build/mm/paging.S.o
 OBJ += ./build/boot/boot.S.o
 OBJ += ./build/drivers/uart.o
 OBJ += ./build/drivers/sd.o
