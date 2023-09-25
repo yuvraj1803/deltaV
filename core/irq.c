@@ -48,6 +48,10 @@ void interrupt_controller_init(){
 	mm_w32(ENABLE_IRQs_1, SYSTEM_TIMER_MATCH_1);
 	mm_w32(ENABLE_IRQs_1, SYSTEM_TIMER_MATCH_3);
         mm_w32(ENABLE_IRQs_1, AUX_INT);
+
+	log("IRQ initialised");
+	log("Interrupt Controller initialised");
+
 }
 
 void log_unsupported_exception(uint64_t exception_type,

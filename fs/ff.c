@@ -24,11 +24,13 @@
 #include "fs/ff.h"			/* Declarations of FatFs API */
 #include "fs/ffconf.h"
 #include "fs/diskio.h"		/* Declarations of device I/O functions */
+#include "stdio.h"
 
 FATFS fat;
 
 void fs_init(){
 	f_mount(&fat, "/", 1);
+	log("FS initialised");
 }
 
 

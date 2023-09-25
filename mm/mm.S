@@ -6,4 +6,5 @@ mm_r32:
 	ret
 mm_w32:
 	str w1, [x0]
-	ret		
+	ret
+

@@ -2,11 +2,14 @@
 #include "core/vm.h"
 #include "config.h"
 #include "memory.h"
+#include "stdio.h"
 
-struct vm* vmlist[CONFIG_MAX_VMs];
 
 void sched_init(){
+	log("Scheduler initialised");
+}
 
-    memset(vmlist, 0, sizeof(vmlist));
+void schedule(){
 
+    
 }

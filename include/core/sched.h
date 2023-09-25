@@ -5,4 +5,5 @@
 
 void sched_init();
 extern void load_sysregs(struct sysregs* _sysregs);
+void schedule();
 #endif

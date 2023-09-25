@@ -27,13 +27,14 @@ void timer_info(){
 }
 void timer_init(void){
 	mm_w32(TIMER_C1,mm_r32(TIMER_CLO) + timer_interval);
+
+	log("Timer initialised");
 }
 
 void system_timer_1_handler(){
 
 	mm_w32(TIMER_C1,  mm_r32(TIMER_CLO) + timer_interval);
 	mm_w32(TIMER_CS, TIMER_CS_M1);
-	printf("hello\n");
 }
 
 void system_timer_3_handler(){

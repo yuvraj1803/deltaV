@@ -1,4 +1,5 @@
 #include "mm/paging.h"
+#include "stdio.h"
 
 extern volatile uint32_t __page_dir_start;
 
@@ -10,5 +11,7 @@ void mmu_init(){
 	load_vtcr_el2();
 	load_mair_el2();
 	clear_el1_tlb();
-	load_sctlr_with_mmu();
+	//load_sctlr_with_mmu();
+	
+	log("MMU initialised");
 }

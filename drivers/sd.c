@@ -153,7 +153,7 @@ int sd_cmd(unsigned int code, unsigned int arg)
         code &= ~CMD_NEED_APP;
     }
     if(sd_status(SR_CMD_INHIBIT)) { uart_write("ERROR: EMMC busy\n"); sd_err= SD_TIMEOUT;return 0;}
-    uart_write("EMMC: Sending command ");uart_write_hex(code);uart_write(" arg ");uart_write_hex(arg);uart_write("\n");
+ //   uart_write("EMMC: Sending command ");uart_write_hex(code);uart_write(" arg ");uart_write_hex(arg);uart_write("\n");
     *EMMC_INTERRUPT=*EMMC_INTERRUPT; *EMMC_ARG1=arg; *EMMC_CMDTM=code;
     if(code==CMD_SEND_OP_COND) delay_micro_sec(1000); else
     if(code==CMD_SEND_IF_COND || code==CMD_APP_CMD) delay_micro_sec(100);
@@ -232,7 +232,7 @@ int sd_clk(unsigned int f)
     }
     if(sd_hv>HOST_SPEC_V2) d=c; else d=(1<<s);
     if(d<=2) {d=2;s=0;}
-    uart_write("sd_clk divisor ");uart_write_hex(d);uart_write(", shift ");uart_write_hex(s);uart_write("\n");
+//    uart_write("sd_clk divisor ");uart_write_hex(d);uart_write(", shift ");uart_write_hex(s);uart_write("\n");
     if(sd_hv>HOST_SPEC_V2) h=(d&0x300)>>2;
     d=(((d&0x0ff)<<8)|h);
     *EMMC_CONTROL1=(*EMMC_CONTROL1&0xffff003f)|d; delay_micro_sec(10);
@@ -267,7 +267,7 @@ int sd_init()
     delay_cycles(150); mm_w(GPPUD,0); mm_w(GPPUDCLK1,0);
 
     sd_hv = (*EMMC_SLOTISR_VER & HOST_SPEC_NUM) >> HOST_SPEC_NUM_SHIFT;
-    uart_write("EMMC: GPIO set up\n");
+  //  uart_write("EMMC: GPIO set up\n");
     // Reset the card.
     *EMMC_CONTROL0 = 0; *EMMC_CONTROL1 |= C1_SRST_HC;
     cnt=10000; do{delay_micro_sec(10);} while( (*EMMC_CONTROL1 & C1_SRST_HC) && cnt-- );
@@ -275,7 +275,7 @@ int sd_init()
         uart_write("ERROR: failed to reset EMMC\n");
         return SD_ERROR;
     }
-    uart_write("EMMC: reset OK\n");
+  //  uart_write("EMMC: reset OK\n");
     *EMMC_CONTROL1 |= C1_CLK_INTLEN | C1_TOUNIT_MAX;
     delay_micro_sec(10);
     // Set clock to setup frequency.
@@ -291,16 +291,16 @@ int sd_init()
     cnt=6; r=0; while(!(r&ACMD41_CMD_COMPLETE) && cnt--) {
         delay_cycles(400);
         r=sd_cmd(CMD_SEND_OP_COND,ACMD41_ARG_HC);
-        uart_write("EMMC: CMD_SEND_OP_COND returned ");
+   //     uart_write("EMMC: CMD_SEND_OP_COND returned ");
         if(r&ACMD41_CMD_COMPLETE)
-            uart_write("COMPLETE ");
+   //         uart_write("COMPLETE ");
         if(r&ACMD41_VOLTAGE)
-            uart_write("VOLTAGE ");
+     //       uart_write("VOLTAGE ");
         if(r&ACMD41_CMD_CCS)
-            uart_write("CCS ");
-        uart_write_hex(r>>32);
-        uart_write_hex(r);
-        uart_write("\n");
+     //       uart_write("CCS ");
+     //   uart_write_hex(r>>32);
+     //   uart_write_hex(r);
+     //   uart_write("\n");
         if(sd_err!=SD_TIMEOUT && sd_err!=SD_OK ) {
             uart_write("ERROR: EMMC ACMD41 returned error\n");
             return sd_err;
@@ -313,10 +313,10 @@ int sd_init()
     sd_cmd(CMD_ALL_SEND_CID,0);
 
     sd_rca = sd_cmd(CMD_SEND_REL_ADDR,0);
-    uart_write("EMMC: CMD_SEND_REL_ADDR returned ");
-    uart_write_hex(sd_rca>>32);
-    uart_write_hex(sd_rca);
-    uart_write("\n");
+//    uart_write("EMMC: CMD_SEND_REL_ADDR returned ");
+//    uart_write_hex(sd_rca>>32);
+//    uart_write_hex(sd_rca);
+//    uart_write("\n");
     if(sd_err) return sd_err;
 
     if((r=sd_clk(25000000))) return r;
@@ -343,11 +343,11 @@ int sd_init()
         *EMMC_CONTROL0 |= C0_HCTL_DWITDH;
     }
     // add software flag
-    uart_write("EMMC: supports ");
+//    uart_write("EMMC: supports ");
     if(sd_scr[0] & SCR_SUPP_SET_BLKCNT)
-        uart_write("SET_BLKCNT ");
+//        uart_write("SET_BLKCNT ");
     if(ccs)
-        uart_write("CCS ");
+//        uart_write("CCS ");
     uart_write("\n");
     sd_scr[0]&=~SCR_SUPP_CCS;
     sd_scr[0]|=ccs;
