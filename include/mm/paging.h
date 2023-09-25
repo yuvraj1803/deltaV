@@ -11,7 +11,8 @@ void load_tcr_el2();
 void load_vtcr_el2();
 void load_mair_el2();
 void clear_el1_tlb();
-void load_sctlr_with_mmu();
+void enable_mmu();
+void disable_mmu();
 void prepare_page_tables_and_map_memory(uint64_t __page_dir_start);
 
 struct vaddr_space{

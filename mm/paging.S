@@ -6,7 +6,8 @@
 .globl load_vtcr_el2
 .globl load_mair_el2
 .globl clear_el1_tlb
-.globl load_sctlr_with_mmu
+.globl enable_mmu
+.globl disable_mmu
 .globl prepare_page_tables_and_map_memory
 
 prepare_page_tables_and_map_memory:
@@ -96,11 +97,20 @@ clear_el1_tlb:
         tlbi alle1
 	ret
 
-load_sctlr_with_mmu:
+enable_mmu:
         ldr x1, = EL2_SCTLR_WITH_MMU
         dsb ish
         isb
         msr sctlr_el2, x1        
         isb
 	ret
+
+disable_mmu:
+	ldr x1, =(EL2_SCTLR_NO_MMU)  
+        dsb ish
+        isb
+        msr sctlr_el2, x1
+        isb
+	ret
+
 

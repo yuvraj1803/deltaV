@@ -6,6 +6,8 @@
 .globl halt
 
 _start:
+	bl disable_mmu
+	
 	bl cpu_check 		// we check if we are on the main CPU or not. Otherwise, we just halt
 	bl bss_init 		// initialise bss section
 			
@@ -56,30 +58,9 @@ el2_entry:
 	ldr x1, =EL2_HCR		// setup HCR in EL2
 	msr hcr_el2, x1
 
-        ldr x1, =EL2_SPSR               // setup SPSR in EL2
-        msr spsr_el2, x1
+    	ldr x1, =EL2_SPSR               // setup SPSR in EL2
+    	msr spsr_el2, x1
 
-/*
-	// load page dir
-	
-	ldr x0, =(TCR_EL2)
-	msr tcr_el2, x0
-
-	
-//	ldr x0, =(VTCR_VALUE)
-	msr vtcr_el2, x0
-
-	ldr x0, =(MAIR_EL2)
-	msr mair_el2, x0
-
-	tlbi alle1
-
-	ldr x1, = EL2_SCTLR_WITH_MMU
-	dsb ish
-	isb
-	msr sctlr_el2, x1		// EL2 SCTLR, initially MMU is disabled
-	isb
-*/
 	bl delta_main
 	b halt
 

@@ -11,7 +11,7 @@ void mmu_init(){
 	load_vtcr_el2();
 	load_mair_el2();
 	clear_el1_tlb();
-	//load_sctlr_with_mmu();
+	enable_mmu();
 	
 	log("MMU initialised");
 }
