@@ -9,6 +9,7 @@
 #include "stdio.h"
 #include "kstatus.h"
 #include "memory.h"
+#include "mm/paging.h"
 
 struct vm* vmlist[CONFIG_MAX_VMs];
 static int total_vms = 0;
@@ -66,7 +67,7 @@ struct vm* vm_init(char* name, uint64_t sp, uint64_t entry, uint64_t base){
 
 	_vm->state = VM_WAITING; // initially vm is in waiting state. until scheduled.
 
-	load_sysregs(&_vm->cpu.sysregs);
+	get_sysregs(&_vm->cpu.sysregs);
 	_vm->cpu.sysregs.sctlr_el1 &= ~1;	// disable MMU.
 
 	_vm->console.in = 0;
@@ -90,7 +91,7 @@ struct vm* vm_init(char* name, uint64_t sp, uint64_t entry, uint64_t base){
 		return 0;
 
 	}
-	
+
 	printf("LOG: %s loaded.", _vm->name);
 	return _vm;
 	
