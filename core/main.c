@@ -25,7 +25,7 @@ void delta_main(void){
 	timer_init();
 	sched_init();
 
-	vm_init("/guests/hw.bin", 0,0,0);
+	vm_init("/guests/freertos.bin", 0x80000,0x80000,0x80000);
 
 	while(1){
 		__disable_irq();

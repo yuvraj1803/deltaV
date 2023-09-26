@@ -1,6 +1,7 @@
 #include "core/vm.h"
 #include <stdint.h>
 #include "mm/mm.h"
+#include "mm/mmu.h"
 #include "core/sched.h"
 #include "string.h"
 #include "config.h"
@@ -24,10 +25,24 @@ int8_t load_vm(struct vm* _vm, uint64_t sp, uint64_t entry, uint64_t base){
 	FILINFO fno;
 	f_stat(_vm->name, &fno);
 	_vm->vmdata = malloc(fno.fsize);
+	_vm->vmdata_size = fno.fsize;
+
 	f_read(&vmfile, _vm->vmdata, fno.fsize, 0);
 	f_close(&vmfile);
 
-	return 0;
+	_vm->cpu.context.sp = sp;
+	_vm->cpu.context.pc = entry;
+
+	_vm->load_addr = base;
+
+	if(map_virtual_address_space(_vm) < 0){
+		free(_vm->vmdata);
+		return -ERR_VM_LOAD_FAIL;
+	}
+
+
+
+	return SUCCESS;
 
 }
 
@@ -52,12 +67,13 @@ struct vm* vm_init(char* name, uint64_t sp, uint64_t entry, uint64_t base){
 	_vm->state = VM_WAITING; // initially vm is in waiting state. until scheduled.
 
 	load_sysregs(&_vm->cpu.sysregs);
+	_vm->cpu.sysregs.sctlr_el1 &= ~1;	// disable MMU.
 
 	_vm->console.in = 0;
 	_vm->console.out = 0;
 	memset(_vm->console.buffer, 0, sizeof(_vm->console.buffer));
 	
-	_vm->virtual_address_space.lv1_table = 0; // we will initialise this later when loading the vm into virtual memory.
+	_vm->virtual_address_space = create_virtual_address_space(MMU_STAGE_2_MEM_FLAGS, MMU_STAGE_2_MMIO_FLAGS); // we will initialise this later when loading the vm into virtual memory.
 
 	memset(&_vm->cpu.interrupt_regs, 0, sizeof(_vm->cpu.interrupt_regs));
 	memset(&_vm->cpu.system_timer_regs, 0, sizeof(_vm->cpu.system_timer_regs));

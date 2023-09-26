@@ -156,13 +156,15 @@ struct vm{
 	char name[32];
 	uint8_t vmid;
 	uint8_t state;
-	struct vaddr_space virtual_address_space;
+	struct vaddr_space* virtual_address_space;
 	struct vcpu cpu;
 	struct vm_console console;
 	struct vm_info info;
 
 	uint64_t* vmdata;
+	uint64_t vmdata_size;
 
+	uint64_t load_addr; // in virtual memory
 };
 
 #endif
