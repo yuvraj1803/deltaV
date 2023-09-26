@@ -4,5 +4,7 @@
 void log(char* str);
 void panic(char* str);
 void printf(char* fmt, ...);
+void gets(char* str); // doesnt check for buffer overflow
+char getch();
 
 #endif

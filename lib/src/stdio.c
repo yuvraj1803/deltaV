@@ -16,6 +16,22 @@ void panic(char *str){
 	while(1);
 }
 
+char getch(){
+	return uart_rx();
+}
+
+void gets(char* str){
+	int index = 0;
+	char ch;
+
+	do{
+		ch = uart_rx();
+		str[index] = ch;
+		index++;
+		uart_tx(ch);
+	}while(ch != '\n');
+
+}
 
 void printf(char* fmt, ...){
 	va_list ap;
