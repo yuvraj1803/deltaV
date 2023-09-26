@@ -78,7 +78,7 @@ load_vttbr_el2:
         lsl x0, x0, 48
         orr x1, x1, x0  // attach VMID to vttbr
         msr vttbr_el2, x1
-        dsh ish
+        dsb ish
         isb
         ret
 
