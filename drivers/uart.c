@@ -31,9 +31,9 @@ void uart_init(){
 void uart_tx(char ch){
 	do{
 		asm volatile("nop");
-	}while(!(mm_r(AUX_MU_LSR_REG) & 0x20)); // wait for UART tx
+	}while(!(mm_r32(AUX_MU_LSR_REG) & 0x20)); // wait for UART tx
 
-	mm_w(AUX_MU_IO_REG, ch);
+	mm_w32(AUX_MU_IO_REG, ch);
 }
 
 char uart_rx(){
@@ -41,9 +41,11 @@ char uart_rx(){
 		asm volatile("nop");
 	}while(!(mm_r(AUX_MU_LSR_REG) & 0x01)); // wait for something to be written into buf.
 	
-	if(mm_r(AUX_MU_IO_REG) == '\r') return '\n'; // conv carriage ret into newline
+	uint8_t response = mm_r(AUX_MU_IO_REG) & 0xFF;
 
-	return mm_r(AUX_MU_IO_REG & 0xFF);
+	if(response == '\r') return '\n'; // conv carriage ret into newline
+
+	return response;
 }
 
 void uart_write_size(char * str, uint64_t size){
