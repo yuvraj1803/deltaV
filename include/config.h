@@ -2,6 +2,9 @@
 #define __config_h__
 
 #define CONFIG_VM_CONSOLE_BUFFER_SIZE	512
+#define CONFIG_SHELL_BUFFER_SIZE        4096
+#define CONFIG_MAX_SHELL_COMMAND_SIZE   512
+#define CONFIG_MAX_SHELL_COMMANDS       32
 #define CONFIG_MAX_VMs					256
 #define CONFIG_SCHED_QUANTA				100 // in milliseconds
 

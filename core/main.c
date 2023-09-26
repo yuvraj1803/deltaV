@@ -9,6 +9,7 @@
 #include "core/misc.h"
 #include "core/sched.h"
 #include "core/vm.h"
+#include "shell/shell.h"
 
 
 
@@ -25,7 +26,10 @@ void delta_main(void){
 	timer_init();
 	sched_init();
 
-	vm_init("/guests/freertos.bin", 0x80000,0x80000,0x80000);
+	vm_init("/guests/hw.bin", 0x80000,0x80000,0x80000);
+
+
+	shell_init();
 
 	while(1){
 		__disable_irq();

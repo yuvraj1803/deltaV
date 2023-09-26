@@ -1,11 +1,11 @@
 INC = ./include
 LIB = ./lib/include
 TOOLCHAIN=aarch64-linux-gnu-
-CC = $(TOOLCHAIN)gcc
-AS = $(TOOLCHAIN)as
-LD = $(TOOLCHAIN)ld
-OBJCOPY = $(TOOLCHAIN)objcopy
-OBJDUMP = $(TOOLCHAIN)objdump
+CC = 		$(TOOLCHAIN)gcc
+AS = 		$(TOOLCHAIN)as
+LD = 		$(TOOLCHAIN)ld
+OBJCOPY = 	$(TOOLCHAIN)objcopy
+OBJDUMP = 	$(TOOLCHAIN)objdump
 
 CFLAGS = -g -ffreestanding -nostdlib -nostartfiles -Wall -I$(INC) -I$(LIB)
 ASMFLAGS = -g -I$(INC)
@@ -34,6 +34,7 @@ OBJ += ./build/lib/string.o
 OBJ += ./build/lib/stdlib.o
 OBJ += ./build/fs/ff.o
 OBJ += ./build/fs/diskio.o
+OBJ += ./build/shell/shell.o
 
 .PHONY: all
 all: sdcard kernel8.img
@@ -60,6 +61,8 @@ all: sdcard kernel8.img
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ./build/lib/%.o: ./lib/src/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+./build/shell/%.o : ./shell/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 kernel8.img : $(OBJ)
