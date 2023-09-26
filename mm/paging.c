@@ -12,7 +12,7 @@
 extern volatile uint32_t __page_dir_start;
 
 struct vaddr_space* create_virtual_address_space(){
-	uint64_t* lv1_table = malloc(PAGE_SIZE); // 1GB blocks	
+	uint64_t* lv1_table = (uint64_t*) malloc(PAGE_SIZE); // 1GB blocks	
 
 	struct vaddr_space *new_virtual_address_space = (struct vaddr_space*) malloc(sizeof(struct vaddr_space));
 	new_virtual_address_space->lv1_table = lv1_table;
@@ -26,13 +26,13 @@ static void map_page(struct vm* _vm, uint64_t phys, uint64_t virt, uint64_t flag
 	uint64_t lv1_table_index = (virt >> LV1_SHIFT) & ((1U << TABLE_SHIFT) - 1);
 
 	if(lv1_table[lv1_table_index] == 0){ // ie. if this 2MB block has never been mapped before
-		uint64_t* lv2_table = malloc(PAGE_SIZE);
+		uint64_t* lv2_table = (uint64_t*) malloc(PAGE_SIZE);
 		uint64_t lv2_table_index = (virt >> LV2_SHIFT) & ((1U << TABLE_SHIFT) - 1);
 
 		lv1_table[lv1_table_index] = (uint64_t) lv2_table | MMU_DESCRIPTOR_TABLE_DESCRIPTOR_FLAG;
 		lv2_table[lv2_table_index] = phys | flags;
 	}else{
-		uint64_t* lv2_table = lv1_table[lv1_table_index] & (~MMU_DESCRIPTOR_TABLE_DESCRIPTOR_FLAG);
+		uint64_t* lv2_table = (uint64_t*) (lv1_table[lv1_table_index] & (~MMU_DESCRIPTOR_TABLE_DESCRIPTOR_FLAG));
 		uint64_t lv2_table_index = (virt >> LV2_SHIFT) & ((1U << TABLE_SHIFT) - 1);
 
 		lv2_table[lv2_table_index] = phys | flags;
@@ -72,8 +72,8 @@ int8_t map_virtual_address_space(struct vm* _vm){
 
 void mmu_init(){
 
-	prepare_page_tables_and_map_memory(&__page_dir_start);
-	load_ttbr0_el2(&__page_dir_start);
+	prepare_page_tables_and_map_memory((uint64_t)&__page_dir_start);
+	load_ttbr0_el2((uint64_t)(uint64_t*)&__page_dir_start);
 	load_tcr_el2();
 	load_vtcr_el2();
 	load_mair_el2();
