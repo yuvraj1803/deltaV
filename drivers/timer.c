@@ -2,6 +2,7 @@
 #include "mm/mm.h"
 #include "config.h"
 #include "stdio.h"
+#include "core/sched.h"
 
 #define TIMER_BASE	(PERIPH_BASE + 0x3000)
 
@@ -35,6 +36,7 @@ void system_timer_1_handler(){
 
 	mm_w32(TIMER_C1,  mm_r32(TIMER_CLO) + timer_interval);
 	mm_w32(TIMER_CS, TIMER_CS_M1);
+	schedule();
 }
 
 void system_timer_3_handler(){
