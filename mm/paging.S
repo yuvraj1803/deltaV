@@ -5,6 +5,7 @@
 .globl load_tcr_el2
 .globl load_vtcr_el2
 .globl load_mair_el2
+.globl load_vttbr_el2
 .globl clear_el1_tlb
 .globl enable_mmu
 .globl disable_mmu
@@ -72,6 +73,14 @@ prepare_page_tables_and_map_memory:
 	ret
 
 
+load_vttbr_el2:
+        and x0, x0, 0xff // 8-bit VMID
+        lsl x0, x0, 48
+        orr x1, x1, x0  // attach VMID to vttbr
+        msr vttbr_el2, x1
+        dsh ish
+        isb
+        ret
 
 
 load_ttbr0_el2:

@@ -7,6 +7,7 @@
 
 void mmu_init();
 
+void load_vttbr_el2(uint64_t vmid, uint64_t vttbr);
 void load_ttbr0_el2(uint64_t __page_dir_start);
 void load_tcr_el2();
 void load_vtcr_el2();
