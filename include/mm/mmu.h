@@ -11,12 +11,15 @@
 #define MAIR_HYPERVISOR_MMIO_FLAGS              0x0         // nGnRnE
 #define EL2_MAIR                                (MAIR_HYPERVISOR_MEM_FLAGS << (8 * MAIR_HYPERVISOR_MEM_ATTR_INDEX) | MAIR_HYPERVISOR_MMIO_FLAGS << (8 * MAIR_HYPERVISOR_MMIO_ATTR_INDEX))
 
-#define MMU_AF                                  (1U << 10) // ELx R+W
+#define MMU_AF                                  (1U << 10) // Access Flag
 #define MMU_SH                                  (3U << 8)  // Inner Shareable
-
+#define MMU_AP                                  (3U << 6)  // ELx Read-Only
+#define MMU_AP_NO_ACCESS                        (0U << 10)
 
 #define MMU_HYPERVISOR_MEM_FLAGS                (MMU_DESCRIPTOR_TABLE_BLOCK_FLAG | MMU_AF | MMU_SH | (MAIR_HYPERVISOR_MEM_ATTR_INDEX << 2))
 #define MMU_HYPERVISOR_MMIO_FLAGS               (MMU_DESCRIPTOR_TABLE_BLOCK_FLAG | MMU_AF | MMU_SH | (MAIR_HYPERVISOR_MMIO_ATTR_INDEX << 2))
 
+#define MMU_STAGE_2_MEM_FLAGS                   (MMU_DESCRIPTOR_TABLE_BLOCK_FLAG | MMU_AP | MMU_SH | (MAIR_HYPERVISOR_MEM_ATTR_INDEX << 2) | MMU_AF)
+#define MMU_STAGE_2_MMIO_FLAGS                  (MMU_DESCRIPTOR_TABLE_BLOCK_FLAG | MMU_AP_NO_ACCESS| MMU_SH | (MAIR_HYPERVISOR_MMIO_ATTR_INDEX << 2) | MMU_AF)
 
 #endif

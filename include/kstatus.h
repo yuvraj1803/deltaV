@@ -28,6 +28,7 @@ enum ERRORS{
     ERR_FD_NOT_FOUND,
 
     ERR_VM_LOAD_FAIL,
+    ERR_VM_VMAPPING_FAIL,
 
 };
 
