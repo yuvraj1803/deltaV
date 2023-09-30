@@ -5,6 +5,7 @@
 #include "stdio.h"
 #include "string.h"
 #include "mm/paging.h"
+#include "mm/mm.h"
 
 extern struct vm* vmlist[CONFIG_MAX_VMs];
 extern int total_vms;
@@ -43,7 +44,7 @@ void schedule(){
 	int nextvm = -1;
 
 	for(int i=0;i<total_vms;i++){
-		if(vmlist[i]->info.quanta_remaining > max_quanta){
+		if(vmlist[i]->state == VM_WAITING && vmlist[i]->info.quanta_remaining > max_quanta){
 			max_quanta = vmlist[i]->info.quanta_remaining;
 			nextvm = i;
 		}
@@ -55,7 +56,8 @@ void schedule(){
 		}
 		nextvm = 0;
 	}
-	put_sysregs(&vmlist[nextvm]->cpu.sysregs);
-	load_vttbr_el2(vmlist[nextvm]->vmid,vmlist[nextvm]->virtual_address_space->lv1_table);
-	switch_context(&current->cpu.context, &vmlist[nextvm]->cpu.context);
+	struct vm* prev = current;
+	current = vmlist[nextvm];
+
+	switch_context(&prev->cpu.context, &current->cpu.context);
 }
