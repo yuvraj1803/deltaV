@@ -13,7 +13,7 @@
 
 
 
-void delta_main(void){
+void main(void){
 	
 	__disable_irq();
 	
