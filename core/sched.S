@@ -1,5 +1,26 @@
 .globl get_sysregs
 .globl put_sysregs
+.globl switch_context
+
+switch_context:
+	mov x2, sp
+	stp x19, x20, [x0], #16
+	stp x21, x22, [x0], #16
+	stp x23, x24, [x0], #16
+	stp x25, x26, [x0], #16
+	stp x27, x28, [x0], #16
+	stp x29, x2, [x0], #16
+	str x30, [x0]
+	
+	ldp x19, x20, [x1], #16        
+	ldp x21, x22, [x1], #16
+	ldp x23, x24, [x1], #16
+	ldp x25, x26, [x1], #16
+	ldp x27, x28, [x1], #16
+	ldp x29, x9, [x1], #16
+	ldr x30, [x1]
+	mov sp, x9
+	ret
 
 get_sysregs:
     mrs x1, sctlr_el1
@@ -102,7 +123,7 @@ get_sysregs:
 
 put_sysregs:
 	ldp x1, x2, [x0], #16
-    msr sctlr_el1, x1
+        msr sctlr_el1, x1
 	msr ttbr0_el1, x2
 	ldp x1, x2, [x0], #16
 	msr ttbr1_el1, x1
@@ -124,9 +145,9 @@ put_sysregs:
 	msr fpcr, x2
 	ldp x1, x2, [x0], #16
 	msr fpsr, x1
-	msr midr_el1, x2
+	msr vpidr_el2, x2
 	ldp x1, x2, [x0], #16
-	msr mpidr_el1, x1
+	msr vmpidr_el2, x1
 	msr par_el1, x2
 	ldp x1, x2, [x0], #16
 	msr sp_el0, x1
@@ -139,62 +160,8 @@ put_sysregs:
 	msr tpidrro_el0, x2
 	ldp x1, x2, [x0], #16
 	msr vbar_el1, x1
-	msr actlr_el1, x2
-	ldp x1, x2, [x0], #16
-	msr id_pfr0_el1, x1
-	msr id_pfr1_el1, x2
-	ldp x1, x2, [x0], #16
-	msr id_mmfr0_el1, x1
-	msr id_mmfr1_el1, x2
-	ldp x1, x2, [x0], #16
-	msr id_mmfr2_el1, x1
-	msr id_mmfr3_el1, x2
-	ldp x1, x2, [x0], #16
-	msr id_isar0_el1, x1
-	msr id_isar1_el1, x2
-	ldp x1, x2, [x0], #16
-	msr id_isar2_el1, x1
-	msr id_isar3_el1, x2
-	ldp x1, x2, [x0], #16
-	msr id_isar4_el1, x1
-	msr id_isar5_el1, x2
-	ldp x1, x2, [x0], #16
-	msr mvfr0_el1, x1
-	msr mvfr1_el1, x2
-	ldp x1, x2, [x0], #16
-	msr mvfr2_el1, x1
-	msr id_aa64pfr0_el1, x2
-	ldp x1, x2, [x0], #16
-	msr id_aa64pfr1_el1, x1
-	msr id_aa64dfr0_el1, x2
-	ldp x1, x2, [x0], #16
-	msr id_aa64dfr1_el1, x1
-	msr id_aa64isar0_el1, x2
-	ldp x1, x2, [x0], #16
-	msr id_aa64isar1_el1, x1
-	msr id_aa64mmfr0_el1, x2
-	ldp x1, x2, [x0], #16
-	msr id_aa64mmfr1_el1, x1
-	msr id_aa64afr0_el1, x2
-	ldp x1, x2, [x0], #16
-	msr id_aa64afr1_el1, x1
-	msr ctr_el0, x2
-	ldp x1, x2, [x0], #16
-	msr ccsidr_el1, x1
-	msr clidr_el1, x2
-	ldp x1, x2, [x0], #16
-	msr csselr_el1, x1
-	msr aidr_el1, x2
-	ldp x1, x2, [x0], #16
-	msr revidr_el1, x1
-	msr cntkctl_el1, x2
-	ldp x1, x2, [x0], #16
-	msr cntp_ctl_el0, x1
-	msr cntp_cval_el0, x2
-	ldp x1, x2, [x0], #16
-	msr cntp_tval_el0, x1
-	msr cntv_ctl_el0, x2
-	ldp x1, x2, [x0], #16
-	msr cntv_cval_el0, x1
-	msr cntv_tval_el0, x2
+
+	dsb ish
+	isb
+
 	ret
