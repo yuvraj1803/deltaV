@@ -9,11 +9,11 @@
 #define VM_RUNNING 1
 
 struct vm* vm_init(char* name, uint64_t sp, uint64_t entry, uint64_t base);
-
+void prepare_vm();
 
 struct vm_info{
 	uint32_t quanta_remaining;
-	uint8_t prio;
+	uint32_t prio;
 };
 
 struct vm_console{
@@ -22,10 +22,16 @@ struct vm_console{
 	char buffer[CONFIG_VM_CONSOLE_BUFFER_SIZE];
 };
 
+struct pt_regs{
+	uint64_t regs[31];
+	uint64_t sp;
+	uint64_t pc;
+	uint64_t pstate;
+};
+
 struct vcpu{
 
 	struct context{
-
 		uint64_t x19;
 		uint64_t x20;
 		uint64_t x21;
@@ -39,7 +45,6 @@ struct vcpu{
 		uint64_t fp;
 		uint64_t sp; 
 		uint64_t pc;
-
 	}context;
 
 	struct sysregs{
@@ -165,6 +170,8 @@ struct vm{
 	uint64_t vmdata_size;
 
 	uint64_t load_addr; // in virtual memory
+	uint64_t entry; // this is where vm will start executing
+	uint64_t sp_init; // this is the initial stack pointer of the vm.
 };
 
 #endif
