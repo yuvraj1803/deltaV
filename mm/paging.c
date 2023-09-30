@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "kstatus.h"
 #include "mm/mmu.h"
+#include "mm/mm.h"
 
 #define LV1_SHIFT	21
 #define LV2_SHIFT   12
