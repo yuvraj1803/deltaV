@@ -56,8 +56,6 @@ void shell_init(){
     _shell->out = 0;
     memset(_shell->buffer, 0, sizeof(_shell->buffer));
     memset(_shell->commands, 0, sizeof(_shell->commands));
-
-    shell_run(_shell);
-
+    log("Shell initialised\n");
 }
 
