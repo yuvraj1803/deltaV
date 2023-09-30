@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "core/vm.h"
 
+struct vm;
 
 void mmu_init();
 
