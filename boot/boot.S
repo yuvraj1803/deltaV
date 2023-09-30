@@ -61,7 +61,7 @@ el2_entry:
     	ldr x1, =EL2_SPSR               // setup SPSR in EL2
     	msr spsr_el2, x1
 
-	bl delta_main
+	bl main
 	b halt
 
 
