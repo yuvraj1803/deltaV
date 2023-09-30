@@ -30,7 +30,7 @@ static void add_shell_command(struct shell* _shell, char command[], void (*comma
     }
 
     _shell->commands[command_index] = (struct shell_command*) malloc(sizeof(struct shell_command));
-    strcpy(_shell->commands[command_index], command);
+    strcpy(_shell->commands[command_index]->command, command);
     _shell->commands[command_index]->command_handler = command_handler;
 }
 
