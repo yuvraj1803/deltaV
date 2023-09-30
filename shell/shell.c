@@ -40,7 +40,7 @@ void shell_run(struct shell* _shell){
     gets(shell_input);
 
     for(int command_index=0; command_index < CONFIG_MAX_SHELL_COMMANDS; command_index++){
-        if(_shell->commands[command_index] != 0 && (shell_input, _shell->commands[command_index]->command)){
+        if(_shell->commands[command_index] != 0 && strcmp(shell_input, _shell->commands[command_index]->command)){
             _shell->commands[command_index]->command_handler();
             shell_run(_shell);
         }
