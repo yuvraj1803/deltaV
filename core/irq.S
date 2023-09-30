@@ -13,7 +13,7 @@ __enable_irq:
 
 
 irq_init:
-	adr x0, interrupt_vector_table
+	adr x0, vtable
 	msr vbar_el2, x0
 	ret
 

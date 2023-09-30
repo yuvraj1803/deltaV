@@ -1,7 +1,14 @@
 #include "core/exceptions.h"
 
+.macro hypervisor_entry
+.endm
+
+.macro hypervisor_exit
+.endm
+
+
 .macro handle_unsupported_interrupt interrupt_type
-//	switch_to_hypervisor
+	hypervisor_entry
 	mov x0, #\interrupt_type
 	mrs x1, esr_el2
 	mrs x2, elr_el2
@@ -11,50 +18,51 @@
 .endm
 
 .macro handle_irq_interrupt
-// 	switch_to_hypervisor
+	hypervisor_entry
 	bl handle_irq
-	eret // eret only for now. remove this after switch_to_vm is implemented.
-//	switch_to_vm
+	hypervisor_exit
+	eret
 .endm
 
 .macro handle_sync_interrupt
-//	switch_to_hypervisor
+	hypervisor_entry
 	mrs x0, esr_el2
 	mrs x1, elr_el2
 	mrs x2, far_el2
 	mov x3, x8 	// hvc number
 	bl handle_sync
-//	switch_to_vm
+	hypervisor_exit
+	eret
 .endm
 
-.macro interrupt_vector_table_entry handler
+.macro ventry handler
 .align 7
 b \handler
 .endm
 
 
 .align 11
-.globl interrupt_vector_table
-interrupt_vector_table:
-	interrupt_vector_table_entry current_el_sp0_sync
-	interrupt_vector_table_entry current_el_sp0_irq
-	interrupt_vector_table_entry current_el_sp0_fiq
-	interrupt_vector_table_entry current_el_sp0_serror
+.globl vtable
+vtable:
+	ventry current_el_sp0_sync
+	ventry current_el_sp0_irq
+	ventry current_el_sp0_fiq
+	ventry current_el_sp0_serror
 
-	interrupt_vector_table_entry current_el_spx_sync
-	interrupt_vector_table_entry current_el_spx_irq
-	interrupt_vector_table_entry current_el_spx_fiq
-	interrupt_vector_table_entry current_el_spx_serror
+	ventry current_el_spx_sync
+	ventry current_el_spx_irq
+	ventry current_el_spx_fiq
+	ventry current_el_spx_serror
 
-	interrupt_vector_table_entry lower_el_a64_sync
-	interrupt_vector_table_entry lower_el_a64_irq
-	interrupt_vector_table_entry lower_el_a64_fiq
-	interrupt_vector_table_entry lower_el_a64_serror
+	ventry lower_el_a64_sync
+	ventry lower_el_a64_irq
+	ventry lower_el_a64_fiq
+	ventry lower_el_a64_serror
 	
-	interrupt_vector_table_entry lower_el_a32_sync
-	interrupt_vector_table_entry lower_el_a32_irq
-	interrupt_vector_table_entry lower_el_a32_fiq
-	interrupt_vector_table_entry lower_el_a32_serror
+	ventry lower_el_a32_sync
+	ventry lower_el_a32_irq
+	ventry lower_el_a32_fiq
+	ventry lower_el_a32_serror
 
  current_el_sp0_sync:
  	handle_unsupported_interrupt CURRENT_EL_SP0_SYNC 	
