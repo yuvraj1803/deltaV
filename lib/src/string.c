@@ -37,6 +37,8 @@ char tolower(char c){
     return c + 32;
 }
 
+
+
 int strncmp(const char* s1, const char* s2, uint32_t n){
     while(n--){
         if(tolower(*s1) == tolower(*s2)){
@@ -49,6 +51,12 @@ int strncmp(const char* s1, const char* s2, uint32_t n){
     }
 
     return 0;
+}
+
+int strcmp(const char* s1, const char* s2){
+    if(strlen(s1) != strlen(s2)) return 1;
+
+    return strncmp(s1, s2, strlen(s1));
 }
 
 int strncpy(char* tgt, char* src, uint32_t len){
