@@ -10,6 +10,7 @@
 
 struct vm* vm_init(char* name, uint64_t sp, uint64_t entry, uint64_t base);
 void prepare_vm();
+struct pt_regs* get_vm_pt_regs(struct vm* _vm);
 
 struct vm_info{
 	uint32_t quanta_remaining;
