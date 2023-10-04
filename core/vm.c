@@ -18,6 +18,7 @@
 struct vm* vmlist[CONFIG_MAX_VMs];
 int total_vms = 0;
 extern struct vm* current;
+extern void __prepare_vm();
 
 int8_t load_vm(struct vm* _vm, uint64_t sp, uint64_t entry, uint64_t base){
 	// make sure base is page aligned.
@@ -92,7 +93,7 @@ struct vm* vm_init(char* name, uint64_t sp, uint64_t entry, uint64_t base){
 
 	_vm->state = VM_WAITING; // initially vm is in waiting state. until scheduled.
 
-	_vm->cpu.context.pc = (uint64_t) prepare_vm;
+	_vm->cpu.context.pc = (uint64_t) __prepare_vm;
 	_vm->cpu.context.sp = (uint64_t) get_vm_pt_regs(_vm);
 
 	get_sysregs(&_vm->cpu.sysregs);
