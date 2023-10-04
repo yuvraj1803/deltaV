@@ -6,6 +6,7 @@
 #include "string.h"
 #include "mm/paging.h"
 #include "mm/mm.h"
+#include "mm/paging.h"
 
 extern struct vm* vmlist[CONFIG_MAX_VMs];
 extern int total_vms;
@@ -58,6 +59,6 @@ void schedule(){
 	}
 	struct vm* prev = current;
 	current = vmlist[nextvm];
-
+	
 	switch_context(&prev->cpu.context, &current->cpu.context);
 }
