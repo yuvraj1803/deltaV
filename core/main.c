@@ -25,12 +25,10 @@ void main(void){
 	interrupt_controller_init();
 	timer_init();
 	sched_init();
-
-	vm_init("/guests/hw.bin", 0x80000,0x80000,0x80000);
-
-
 	shell_init();
 
+	vm_init("/guests/hw.bin", 0x80000,0x80000,0x80000);
+	
 	while(1){
 		__disable_irq();
 		schedule();
