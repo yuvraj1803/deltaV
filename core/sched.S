@@ -17,9 +17,9 @@ switch_context:
 	ldp x23, x24, [x1], #16
 	ldp x25, x26, [x1], #16
 	ldp x27, x28, [x1], #16
-	ldp x29, x9, [x1], #16
+	ldp x29, x2, [x1], #16
 	ldr x30, [x1]
-	mov sp, x9
+	mov sp, x2
 	ret
 
 get_sysregs:
@@ -123,7 +123,7 @@ get_sysregs:
 
 put_sysregs:
 	ldp x1, x2, [x0], #16
-        msr sctlr_el1, x1
+    msr sctlr_el1, x1
 	msr ttbr0_el1, x2
 	ldp x1, x2, [x0], #16
 	msr ttbr1_el1, x1
