@@ -5,12 +5,13 @@
 #include "mm/mmu.h"
 #include "mm/mm.h"
 
-#define LV1_SHIFT	21
-#define LV2_SHIFT   12
-#define PAGE_SHIFT	12
-#define TABLE_SHIFT	9
+#define LV1_SHIFT		30
+#define LV2_SHIFT   	21
+#define PAGE_SHIFT		12
+#define TABLE_SHIFT		9
+#define TABLE_ENTRIES	(1U << TABLE_SHIFT)
 
-extern volatile uint32_t __page_dir_start;
+extern volatile uint64_t __page_dir_start;
 
 struct vaddr_space* create_virtual_address_space(){
 	uint64_t* lv1_table = (uint64_t*) malloc(PAGE_SIZE); // 1GB blocks	
@@ -21,25 +22,27 @@ struct vaddr_space* create_virtual_address_space(){
 	return new_virtual_address_space;
 }
 
-static void map_page(struct vm* _vm, uint64_t phys, uint64_t virt, uint64_t flags){
+static uint64_t map_table(struct vm* _vm, uint64_t table, uint64_t shift, uint64_t virt){
+	uint64_t table_index = (virt >> shift) & (TABLE_ENTRIES-1);
 
-	uint64_t* lv1_table = _vm->virtual_address_space->lv1_table;
-	uint64_t lv1_table_index = (virt >> LV1_SHIFT) & ((1U << TABLE_SHIFT) - 1);
-
-	if(lv1_table[lv1_table_index] == 0){ // ie. if this 2MB block has never been mapped before
-		uint64_t* lv2_table = (uint64_t*) malloc(PAGE_SIZE);
-		uint64_t lv2_table_index = (virt >> LV2_SHIFT) & ((1U << TABLE_SHIFT) - 1);
-
-		lv1_table[lv1_table_index] = (uint64_t) lv2_table | MMU_DESCRIPTOR_TABLE_DESCRIPTOR_FLAG;
-		lv2_table[lv2_table_index] = phys | flags;
-	}else{
-		uint64_t* lv2_table = (uint64_t*) (lv1_table[lv1_table_index] & (~MMU_DESCRIPTOR_TABLE_DESCRIPTOR_FLAG));
-		uint64_t lv2_table_index = (virt >> LV2_SHIFT) & ((1U << TABLE_SHIFT) - 1);
-
-		lv2_table[lv2_table_index] = phys | flags;
+	if(!((uint64_t*)table)[table_index]){
+		uint64_t* next_table = malloc(PAGE_SIZE);
+		((uint64_t*)table)[table_index] = (uint64_t)next_table | MMU_DESCRIPTOR_TABLE_DESCRIPTOR_FLAG;
 	}
 
+	return ((uint64_t*)table)[table_index] & ~((1U << PAGE_SHIFT)-1);
 
+}
+
+static void map_page(struct vm* _vm, uint64_t phys, uint64_t virt, uint64_t flags){
+
+	uint64_t lv1_table = (uint64_t)_vm->virtual_address_space->lv1_table;
+	uint64_t lv2_table = map_table(_vm, lv1_table, LV1_SHIFT, virt);
+	uint64_t lv3_table = map_table(_vm, lv2_table, LV2_SHIFT, virt);
+	
+	uint64_t lv3_index = (virt >> PAGE_SHIFT) & (TABLE_ENTRIES-1);
+	
+	((uint64_t*) lv3_table)[lv3_index] = phys | flags;
 }
 
 int8_t map_virtual_address_space(struct vm* _vm){
@@ -71,10 +74,11 @@ int8_t map_virtual_address_space(struct vm* _vm){
 	return SUCCESS;
 }
 
+
 void mmu_init(){
 
 	prepare_page_tables_and_map_memory((uint64_t)&__page_dir_start);
-	load_ttbr0_el2((uint64_t)(uint64_t*)&__page_dir_start);
+	load_ttbr0_el2(((uint64_t)(uint64_t*)&__page_dir_start));
 	load_tcr_el2();
 	load_vtcr_el2();
 	load_mair_el2();
