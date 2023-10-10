@@ -33,9 +33,6 @@ SECTIONS{
 	__delta_end = .;
 	. = ALIGN(4096);
 	__page_dir_start = .;
-	.page_dir : { *(.page_dir) }
-	. = ALIGN(4096);
-	__page_dir_end = .;
 	
 
 	/DISCARD/ : {
