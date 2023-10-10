@@ -32,7 +32,7 @@
 #define EL2_SCTLR_WITH_MMU	EL2_SCTLR_NO_MMU | (1 << 0)
 
 #define EL2_SPSR		EL3_SPSR
-#define EL2_TCR	   /*T0SZ*/	(64-38) | /*4K TG0*/	(0 << 14)
+#define EL2_TCR	   /*T0SZ*/	(64-48) | /*4K TG0*/	(0 << 14)
 
 
 #endif
