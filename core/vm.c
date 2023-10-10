@@ -67,7 +67,7 @@ void prepare_vm(){
 	regs->pc = current->entry;
 	memset(regs->regs, 0, sizeof(regs->regs));
 
-	load_vttbr_el2(current->vmid, current->virtual_address_space->lv1_table);
+	load_vttbr_el2(current->vmid, (uint64_t)current->virtual_address_space->lv1_table);
 	put_sysregs(&current->cpu.sysregs);
 	vm_vint_init(current);	// initialise virtual interrupts
 	
