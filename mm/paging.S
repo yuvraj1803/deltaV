@@ -21,6 +21,13 @@ prepare_page_tables_and_map_memory:
         
         add x0, x0, #PAGE_SIZE
 
+        // this is for the PAGE MIDDLE DIRECTORY (PMD)
+        add x1, x0, #PAGE_SIZE
+        orr x1, x1, #MMU_DESCRIPTOR_TABLE_DESCRIPTOR_FLAG
+        str x1, [x0]
+
+        add x0, x0, #PAGE_SIZE
+
         // this is for the PAGE UPPER DIRECTORY (PUD)
         add x1, x0, #PAGE_SIZE
         orr x1, x1, #MMU_DESCRIPTOR_TABLE_DESCRIPTOR_FLAG
