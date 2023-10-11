@@ -27,7 +27,7 @@ static uint64_t map_table(struct vm* _vm, uint64_t table, uint64_t shift, uint64
 
 	if(!((uint64_t*)table)[table_index]){
 		uint64_t* next_table = malloc(PAGE_SIZE);
-		((uint64_t*)table)[table_index] = (uint64_t)next_table | MMU_DESCRIPTOR_TABLE_DESCRIPTOR_FLAG;
+		((uint64_t*)table)[table_index] = (uint64_t)next_table | MMU_TABLE_ENTRY_FLAG;
 	}
 
 	return ((uint64_t*)table)[table_index] & ~((1U << PAGE_SHIFT)-1);
