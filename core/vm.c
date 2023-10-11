@@ -64,7 +64,7 @@ void prepare_vm(){
 	struct pt_regs* regs = get_vm_pt_regs(current);
 	regs->pstate = (PSTATE_INTERRUPT_MASK | PSTATE_EL1h);
 	regs->sp = current->sp_init;
-	regs->pc = current->entry;
+	regs->pc = current->entry;	
 	memset(regs->regs, 0, sizeof(regs->regs));
 
 	load_vttbr_el2(current->vmid, (uint64_t)current->virtual_address_space->lv1_table);
@@ -105,9 +105,7 @@ struct vm* vm_init(char* name, uint64_t sp, uint64_t entry, uint64_t base){
 	
 	_vm->virtual_address_space = create_virtual_address_space(MMU_STAGE_2_MEM_FLAGS, MMU_STAGE_2_MMIO_FLAGS); // we will initialise this later when loading the vm into virtual memory.
 
-	memset(&_vm->cpu.interrupt_regs, 0, sizeof(_vm->cpu.interrupt_regs));
-	memset(&_vm->cpu.system_timer_regs, 0, sizeof(_vm->cpu.system_timer_regs));
-	memset(&_vm->cpu.aux_regs, 0, sizeof(_vm->cpu.aux_regs));
+	vcpu_initialise(&_vm->cpu);
 
 	_vm->info.prio = CONFIG_SCHED_QUANTA; // all vms have the same priority
 	_vm->info.quanta_remaining = CONFIG_SCHED_QUANTA;
