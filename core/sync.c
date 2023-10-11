@@ -88,7 +88,7 @@ void handle_sync_wfx(){
 }
 
 void handle_sync_floating_point_access(){
-
+    printf("LOG: Floating point operations not supported.\n");
 }
 
 void handle_sync_hvc(uint64_t hvc_number){
