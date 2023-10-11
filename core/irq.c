@@ -69,5 +69,3 @@ void handle_irq(){
 	if(pending & SYSTEM_TIMER_MATCH_3) system_timer_3_handler();
 
 }
-void handle_sync(uint64_t esr_el2, uint64_t elr_el2, uint64_t far_el2, uint64_t hvc_number){
-}
