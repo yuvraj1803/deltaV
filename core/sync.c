@@ -1,7 +1,8 @@
 #include "core/sync.h"
+#include "core/vm.h"
+#include "core/sched.h"
 #include "stdio.h"
 
-extern void halt();
 
 const char *sync_info[] = {
 	"Unknown reason.",
@@ -74,13 +75,16 @@ const char *sync_info[] = {
 #define ESR_EC_SYSREG_ACCESS                  0b011000
 #define ESR_EC_DATA_ABORT                     0b100100
 
+extern struct vm* current;
+extern void halt();
 
 uint8_t get_exception_class(uint64_t esr_el2){
     return (esr_el2 >> ESR_EC_SHIFT) & 0b111111;
 }
 
 void handle_sync_wfx(){
-
+    current->cpu.context.pc += 4; // increment PC as we need to acknowledge WFx instruction which caused this trap.
+    schedule();
 }
 
 void handle_sync_floating_point_access(){
