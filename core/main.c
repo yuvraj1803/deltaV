@@ -27,7 +27,7 @@ void main(void){
 	sched_init();
 	shell_init();
 
-	vm_init("/guests/hw.bin", 0x80000,0x80000,0x80000);
+	vm_init("/guests/freertos.bin", 0x80000,0x80000,0x80000);
 	
 	while(1){
 		__disable_irq();
