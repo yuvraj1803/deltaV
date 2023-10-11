@@ -3,12 +3,6 @@
 #include "drivers/uart.h"
 #include <stdarg.h>
 
-void log(char *str){
-	uart_write("LOG: ");
-	uart_write(str);
-	uart_write("\n");
-}
-
 void panic(char *str){
 	uart_write("PANIC: ");
 	uart_write(str);
@@ -60,4 +54,11 @@ void printf(char* fmt, ...){
 			}
 		}
 	}
+}
+
+
+void log(char *str){
+	uart_write("LOG: ");
+	printf(str);
+	uart_write("\n");
 }
