@@ -24,9 +24,11 @@
         mrs x23, spsr_el2
         stp x30, x21, [sp, #16 * 15]
         stp x22, x23, [sp, #16 * 16]
+		bl vcpu_exit
 .endm
 
 .macro hypervisor_exit
+		bl vcpu_enter
         ldp x30, x21, [sp, #16 * 15]
         ldp x22, x23, [sp, #16 * 16]
         msr elr_el2, x22
