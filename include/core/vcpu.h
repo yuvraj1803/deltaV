@@ -136,7 +136,10 @@ struct vcpu{
 	} aux_regs;
 
 	struct system_timer_regs{
-		uint64_t virtual_time_count;
+		uint64_t last_recorded_physical_timer_count; // this will give the timer value when this vcpu was last active.
+		uint64_t time_not_active;					 // this will have the time vcpu has spent sitting idle. when other vcpus where being scheduled.
+		uint64_t virtual_time_count;				// this is the virtual timer val. timer seen by the vcpu.
+
 		uint32_t cs;
 		uint32_t c0;
 		uint32_t c1;
