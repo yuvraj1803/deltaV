@@ -17,14 +17,50 @@ extern struct vm* current;
 uint64_t read_aux(uint64_t addr){
 
 }
-uint64_t read_intctl(uint64_t addr){
 
+// there are common registers to hold all enabled interrupts.
+// this is done to eliminate the necessity for enable AND disable irq regs and to make the implementation simpler.
+// when interrupts are enabled, bits are set and when disabled its reset in this same register. check enabled_irqs_1,3,basic.
+uint64_t read_intctl(uint64_t addr){
+    switch (addr){
+        case IRQ_BASIC_PENDING:
+            return ((read_intctl(IRQ_PENDING_1) != 0) << 8) | ((read_intctl(IRQ_PENDING_2) != 0) << 9);
+         case IRQ_PENDING_1:
+            uint32_t is_timer1_pending = (current->cpu.interrupt_regs.enabled_irqs_1 & (1U << 1)) && (current->cpu.system_timer_regs.cs & TIMER_CS_M1);
+            uint32_t is_timer3_pending = (current->cpu.interrupt_regs.enabled_irqs_1 & (1U << 3)) && (current->cpu.system_timer_regs.cs & TIMER_CS_M3);
+            return (is_timer1_pending << 1) | (is_timer3_pending << 3);
+        case IRQ_PENDING_2:
+            uint32_t is_uart_pending = (current->cpu.interrupt_regs.enabled_irqs_2 & (57-32)) && (read_aux(AUX_IRQ) & 1);
+            return is_uart_pending << (57 - 32);
+        case FIQ_CONTROL:
+            return current->cpu.interrupt_regs.fiq_control;
+            break;
+        case ENABLE_IRQs_1:
+            return current->cpu.interrupt_regs.enabled_irqs_1;
+            break;
+        case ENABLE_IRQs_2:
+            return current->cpu.interrupt_regs.enabled_irqs_2;
+            break;
+        case ENABLE_BASIC_IRQs:
+            return current->cpu.interrupt_regs.enabled_basic_irqs;
+            break;
+        case DISABLE_IRQs_1:
+            return ~current->cpu.interrupt_regs.enabled_irqs_1;
+            break;
+        case DISABLE_IRQs_2:
+            return ~current->cpu.interrupt_regs.enabled_irqs_2;
+            break;
+        case DISABLE_BASIC_IRQs:
+            return ~current->cpu.interrupt_regs.enabled_basic_irqs;
+            break;    
+    }
 }
 uint64_t read_systimer(uint64_t addr){
 
 }
 uint64_t read_gpio(uint64_t addr){
-
+    // gpio read functionality will be added later.
+    printf("GPIO read at: %x\n", addr);
 }
 uint64_t read_mmio(uint64_t addr){
     
@@ -84,7 +120,8 @@ void write_systimer(uint64_t addr,uint64_t val){
 }
 
 void write_gpio(uint64_t addr,uint64_t val){
-    
+     // gpio read functionality will be added later.
+    printf("GPIO write at: %x\n", addr);
 }
 
 void write_mmio(uint64_t addr,uint64_t val){
