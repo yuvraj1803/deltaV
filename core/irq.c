@@ -29,14 +29,6 @@ const char* exception_info[] = {
 
 // refer to bcm2835 reference manual for more details about these constants
 
-#define INTERRUPT_CONTROLLER_BASE	(PERIPH_BASE + 0xB000)
-#define ENABLE_IRQs_1			(INTERRUPT_CONTROLLER_BASE + 0x210)
-#define ENABLE_IRQs_2			(INTERRUPT_CONTROLLER_BASE + 0x214)
-#define DISABLE_IRQs_1			(INTERRUPT_CONTROLLER_BASE + 0x21C)
-#define DISABLE_IRQs_2			(INTERRUPT_CONTROLLER_BASE + 0x220)
-#define IRQ_PENDING_1			(INTERRUPT_CONTROLLER_BASE + 0x204)
-#define IRQ_PENDING_2			(INTERRUPT_CONTROLLER_BASE + 0x208)
-#define FIQ_CONTROL			(INTERRUPT_CONTROLLER_BASE + 0x20C)
 #define SYSTEM_TIMER_MATCH_1		(1U << 1)
 #define SYSTEM_TIMER_MATCH_3		(1U << 3)
 #define AUX_INT				(1U << 29)
