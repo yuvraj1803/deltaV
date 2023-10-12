@@ -65,12 +65,16 @@ uint64_t read_gpio(uint64_t addr){
 uint64_t read_mmio(uint64_t addr){
     
     if(addr >= MMIO_IRQ_BEGIN && addr <= MMIO_IRQ_END){
+        // printf("IRQ read at: %x\n", addr);
         return current->cpu.read_intctl(addr);
     }else if(addr >= MMIO_AUX_BEGIN && addr <= MMIO_AUX_END){
+        // printf("AUX read at: %x\n", addr);
         return current->cpu.read_aux(addr);
     }else if(addr >= MMIO_GPIO_BEGIN && addr <= MMIO_IRQ_END){
+        // printf("GPIO read at: %x\n", addr);
         return current->cpu.read_gpio(addr);
     }else if(addr >= MMIO_TIMER_BEGIN && addr <= MMIO_TIMER_END){
+        // printf("TIMER read at: %x\n", addr);
         return current->cpu.read_systimer(addr);
     }
 
@@ -116,7 +120,9 @@ void write_intctl(uint64_t addr,uint64_t val){
 }
 
 void write_systimer(uint64_t addr,uint64_t val){
-    
+    switch(addr){
+
+    }
 }
 
 void write_gpio(uint64_t addr,uint64_t val){
@@ -127,13 +133,17 @@ void write_gpio(uint64_t addr,uint64_t val){
 void write_mmio(uint64_t addr,uint64_t val){
 
     if(addr >= MMIO_IRQ_BEGIN && addr <= MMIO_IRQ_END){
-         current->cpu.write_intctl(addr, val);
+        current->cpu.write_intctl(addr, val);
+        // printf("IRQ write at: %x\n", addr);
     }else if(addr >= MMIO_AUX_BEGIN && addr <= MMIO_AUX_END){
-         current->cpu.write_aux(addr, val);
+        current->cpu.write_aux(addr, val);
+        // printf("AUX write at: %x\n", addr);
     }else if(addr >= MMIO_GPIO_BEGIN && addr <= MMIO_IRQ_END){
-         current->cpu.write_gpio(addr, val);
+        current->cpu.write_gpio(addr, val);
+        // printf("GPIO write at: %x\n", addr);
     }else if(addr >= MMIO_TIMER_BEGIN && addr <= MMIO_TIMER_END){
-         current->cpu.write_systimer(addr, val);
+        current->cpu.write_systimer(addr, val);
+        // printf("TIMER write at: %x\n", addr);
     }
     
 }
@@ -157,7 +167,7 @@ void vcpu_initialise(struct vcpu* cpu){
 }
 
 void vcpu_exit(){
-
+    
 }
 
 void vcpu_enter(){
