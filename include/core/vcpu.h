@@ -3,7 +3,21 @@
 
 #include <stdint.h>
 
+
 struct vcpu{
+
+    uint64_t (*read_aux)        (uint64_t);
+    uint64_t (*read_intctl)     (uint64_t);
+    uint64_t (*read_systimer)   (uint64_t);
+    uint64_t (*read_gpio)       (uint64_t);
+    uint64_t (*read_mmio)       (uint64_t);
+    
+    void (*write_aux)        (uint64_t,uint64_t);
+    void (*write_intctl)     (uint64_t,uint64_t);
+    void (*write_systimer)   (uint64_t,uint64_t);
+    void (*write_gpio)       (uint64_t,uint64_t);
+    void (*write_mmio)       (uint64_t,uint64_t);
+
 
 	struct context{
 		uint64_t x19;
@@ -100,6 +114,10 @@ struct vcpu{
 		uint32_t disable_irqs_2;
 		uint32_t disable_basic_irqs;
 
+		uint32_t enabled_irqs_1;
+		uint32_t enabled_irqs_2;
+		uint32_t enabled_basic_irqs;
+
 	}interrupt_regs;
 
 	struct aux_regs{
@@ -129,5 +147,9 @@ struct vcpu{
 
 };
 
+
+void vcpu_initialise(struct vcpu* cpu);
+void vcpu_exit();
+void vcpu_enter();
 
 #endif
