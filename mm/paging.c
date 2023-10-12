@@ -34,7 +34,7 @@ static uint64_t map_table(struct vm* _vm, uint64_t table, uint64_t shift, uint64
 
 }
 
-static void map_page(struct vm* _vm, uint64_t phys, uint64_t virt, uint64_t flags){
+void map_page(struct vm* _vm, uint64_t phys, uint64_t virt, uint64_t flags){
 
 	uint64_t lv1_table = (uint64_t)_vm->virtual_address_space->lv1_table;
 	uint64_t lv2_table = map_table(_vm, lv1_table, LV1_SHIFT, virt);

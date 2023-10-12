@@ -17,6 +17,7 @@ void clear_el1_tlb();
 void enable_mmu();
 void disable_mmu();
 void prepare_page_tables_and_map_memory(uint64_t __page_dir_start);
+void map_page(struct vm* _vm, uint64_t phys, uint64_t virt, uint64_t flags);
 
 struct vaddr_space* create_virtual_address_space();
 int8_t map_virtual_address_space(struct vm* _vm);
