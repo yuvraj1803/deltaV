@@ -4,6 +4,7 @@
 #include "mm/paging.h"
 #include "mm/mmu.h"
 #include "mm/mm.h"
+#include "core/vm.h"
 #include "stdio.h"
 #include "kstatus.h"
 
@@ -91,7 +92,7 @@ uint8_t get_exception_class(uint64_t esr_el2){
 }
 
 void handle_sync_wfx(){
-    current->cpu.context.pc += 4; // increment PC as we need to acknowledge WFx instruction which caused this trap.
+    get_vm_pt_regs(current)->pc += 4; // increment PC as we need to acknowledge WFx instruction which caused this trap.
     schedule();
 }
 
@@ -100,7 +101,7 @@ void handle_sync_floating_point_access(){
 }
 
 void handle_sync_hvc(uint64_t hvc_number){
-
+    // hvc support will be added later
 }
 
 void handle_sync_sysreg_access(){
@@ -110,8 +111,6 @@ void handle_sync_sysreg_access(){
 
 int8_t handle_sync_data_abort(uint64_t esr_el2, uint64_t far_el2){
     uint8_t dfsc = esr_el2 & ESR_DFSC_MASK; // Data Fault Status Code
-    uint8_t WnR =  (esr_el2 >> ESR_WnR_SHIFT)&1;    // Write not Read. Tells data abort caused by reading or writing.
-    uint8_t SRT = (esr_el2 >> ESR_SRT_SHIFT) & 0b1111; // Xt/Wt/Rt register involved during the fault.
 
     if((dfsc >> 2) == 0x1){ // Data fault caused by a translation fault.
         uint64_t phys_to_map = (uint64_t) malloc(PAGE_SIZE);
@@ -124,6 +123,18 @@ int8_t handle_sync_data_abort(uint64_t esr_el2, uint64_t far_el2){
         map_page(current, phys_to_map, virt_aborted, MMU_STAGE_2_MEM_FLAGS);
         
     }else{ // Data fault caused by a permission fault. 
+        uint8_t WnR =  (esr_el2 >> ESR_WnR_SHIFT)&1;    // Write not Read. Tells data abort caused by reading or writing.
+        uint8_t SRT = (esr_el2 >> ESR_SRT_SHIFT) & 0b1111; // Xt/Wt/Rt register involved during the fault.  
+
+        struct pt_regs* regs = get_vm_pt_regs(current);
+
+        if(!WnR){
+            regs->regs[SRT] = current->cpu.read_mmio(far_el2);
+        }else{
+            current->cpu.write_mmio(far_el2, regs->regs[SRT]);
+        }
+
+        regs->pc += 4;
 
     }
 
