@@ -136,7 +136,7 @@ struct vcpu{
 	} aux_regs;
 
 	struct system_timer_regs{
-		uint64_t virtual_timer;
+		uint64_t virtual_time_count;
 		uint32_t cs;
 		uint32_t c0;
 		uint32_t c1;
