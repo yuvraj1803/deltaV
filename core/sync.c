@@ -1,7 +1,11 @@
 #include "core/sync.h"
 #include "core/vm.h"
 #include "core/sched.h"
+#include "mm/paging.h"
+#include "mm/mmu.h"
+#include "mm/mm.h"
 #include "stdio.h"
+#include "kstatus.h"
 
 
 const char *sync_info[] = {
@@ -75,6 +79,10 @@ const char *sync_info[] = {
 #define ESR_EC_SYSREG_ACCESS                  0b011000
 #define ESR_EC_DATA_ABORT                     0b100100
 
+#define ESR_DFSC_MASK                         0b111111
+#define ESR_SRT_SHIFT                         16
+#define ESR_WnR_SHIFT                         6
+
 extern struct vm* current;
 extern void halt();
 
@@ -99,8 +107,28 @@ void handle_sync_sysreg_access(){
 
 }
 
-void handle_sync_data_abort(){
-    printf("data abort!!\n");
+
+int8_t handle_sync_data_abort(uint64_t esr_el2, uint64_t far_el2){
+    uint8_t dfsc = esr_el2 & ESR_DFSC_MASK; // Data Fault Status Code
+    uint8_t WnR =  (esr_el2 >> ESR_WnR_SHIFT)&1;    // Write not Read. Tells data abort caused by reading or writing.
+    uint8_t SRT = (esr_el2 >> ESR_SRT_SHIFT) & 0b1111; // Xt/Wt/Rt register involved during the fault.
+
+    if((dfsc >> 2) == 0x1){ // Data fault caused by a translation fault.
+        uint64_t phys_to_map = (uint64_t) malloc(PAGE_SIZE);
+        uint64_t virt_aborted = far_el2 & ~(PAGE_SIZE-1);
+
+        if(phys_to_map == 0){ // malloc failed to allocate a page.
+            return -ERR_MALLOC_FAIL;
+        }
+
+        map_page(current, phys_to_map, virt_aborted, MMU_STAGE_2_MEM_FLAGS);
+        
+    }else{ // Data fault caused by a permission fault. 
+
+    }
+
+    return SUCCESS;
+
 }
 
 void handle_sync(uint64_t esr_el2, uint64_t elr_el2, uint64_t far_el2, uint64_t hvc_number){
@@ -126,7 +154,11 @@ void handle_sync(uint64_t esr_el2, uint64_t elr_el2, uint64_t far_el2, uint64_t 
             break;
         
         case ESR_EC_DATA_ABORT:
-            handle_sync_data_abort();
+            int8_t data_abort_handler_status = handle_sync_data_abort(esr_el2, far_el2);
+            if(data_abort_handler_status  < 0){
+                printf("Data abort could not be handled. ESR: %x FAR: %x\n");
+                halt();
+            }
             break;
 
         default:
