@@ -3,6 +3,7 @@
 #include "config.h"
 #include "stdio.h"
 #include "core/sched.h"
+#include "core/vm.h"
 
 
 const uint32_t timer_interval = CONFIG_SCHED_QUANTA * (1000000/1000); // timer runs at 1MHz
@@ -28,4 +29,12 @@ void system_timer_1_handler(){
 
 void system_timer_3_handler(){
 	
+}
+
+uint64_t get_phys_timer(){
+	return mm_r32(TIMER_CLO) | mm_r32(TIMER_CHI);
+}
+
+uint64_t get_virt_timer(struct vm* _vm){
+	return get_phys_timer() - _vm->cpu.system_timer_regs.time_not_active;
 }
