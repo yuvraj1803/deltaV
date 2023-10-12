@@ -22,6 +22,7 @@ OBJ += ./build/core/sched.S.o
 OBJ += ./build/core/vm.o
 OBJ += ./build/core/vcpu.o
 OBJ += ./build/core/sync.o
+OBJ += ./build/core/console.o
 OBJ += ./build/mm/mm.o
 OBJ += ./build/mm/mm.S.o
 OBJ += ./build/mm/paging.o

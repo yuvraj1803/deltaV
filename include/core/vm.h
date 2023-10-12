@@ -5,6 +5,7 @@
 #include "config.h"
 #include "mm/paging.h"
 #include "core/vcpu.h"
+#include "core/console.h"
 
 #define VM_WAITING 0
 #define VM_RUNNING 1
@@ -16,12 +17,6 @@ struct pt_regs* get_vm_pt_regs(struct vm* _vm);
 struct vm_info{
 	uint32_t quanta_remaining;
 	uint32_t prio;
-};
-
-struct vm_console{
-	int in;
-	int out;
-	char buffer[CONFIG_VM_CONSOLE_BUFFER_SIZE];
 };
 
 struct pt_regs{
