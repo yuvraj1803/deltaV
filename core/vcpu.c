@@ -2,6 +2,7 @@
 #include "memory.h"
 #include "mm/mm.h"
 #include "core/vm.h"
+#include "drivers/timer.h"
 
 #define MMIO_IRQ_BEGIN      IRQ_BASIC_PENDING
 #define MMIO_IRQ_END        DISABLE_IRQs_2
@@ -56,7 +57,22 @@ uint64_t read_intctl(uint64_t addr){
     }
 }
 uint64_t read_systimer(uint64_t addr){
-
+    switch(addr){
+        case TIMER_CS:
+            return current->cpu.system_timer_regs.cs;
+        case TIMER_CHI:
+            return get_virt_timer(current) >> 32;
+        case TIMER_CLO:
+            return get_virt_timer(current) & 0xffffffff;
+        case TIMER_C0:
+            return current->cpu.system_timer_regs.c0;
+        case TIMER_C1:
+            return current->cpu.system_timer_regs.c1;
+        case TIMER_C2:
+            return current->cpu.system_timer_regs.c2;
+        case TIMER_C3:
+            return current->cpu.system_timer_regs.c3;
+    }
 }
 uint64_t read_gpio(uint64_t addr){
     // gpio read functionality will be added later.
@@ -167,9 +183,11 @@ void vcpu_initialise(struct vcpu* cpu){
 }
 
 void vcpu_exit(){
-    
+    current->cpu.system_timer_regs.last_recorded_physical_timer_count = get_phys_timer(); 
 }
 
 void vcpu_enter(){
-
+    uint64_t current_time = get_phys_timer();
+    uint64_t time_inactive = current_time - current->cpu.system_timer_regs.last_recorded_physical_timer_count;
+    current->cpu.system_timer_regs.time_not_active += time_inactive;
 }
