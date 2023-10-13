@@ -31,10 +31,11 @@ void system_timer_3_handler(){
 	
 }
 
-uint64_t get_phys_timer(){
+uint64_t get_phys_time(){
 	return mm_r32(TIMER_CLO) | mm_r32(TIMER_CHI);
 }
 
-uint64_t get_virt_timer(struct vm* _vm){
+uint64_t get_virt_time(struct vm* _vm){
 	return get_phys_timer() - _vm->cpu.system_timer_regs.time_not_active;
 }
+
