@@ -139,7 +139,21 @@ void write_intctl(uint64_t addr,uint64_t val){
 
 void write_systimer(uint64_t addr,uint64_t val){
     switch(addr){
-
+        case TIMER_CS:
+            current->cpu.system_timer_regs.cs &= ~val;
+            break;
+        case TIMER_C0:
+            current->cpu.system_timer_regs.c0 = val;
+            break;
+        case TIMER_C1:
+            current->cpu.system_timer_regs.c1 = val;
+            break;
+        case TIMER_C2:
+            current->cpu.system_timer_regs.c2 = val;
+            break;
+        case TIMER_C3:
+            current->cpu.system_timer_regs.c3 = val;
+            break;
     }
 }
 
