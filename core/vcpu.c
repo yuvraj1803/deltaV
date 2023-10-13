@@ -196,14 +196,27 @@ void vcpu_initialise(struct vcpu* cpu){
     cpu->write_systimer = write_systimer;
     cpu->write_gpio     = write_gpio;
     cpu->write_mmio     = write_mmio;
+
+    cpu->check_irq_pending = check_irq_pending;
+    cpu->check_fiq_pending = check_fiq_pending;
 }
 
 void vcpu_exit(){
+    // save when vm was last active physically.
     current->cpu.system_timer_regs.last_recorded_physical_timer_count = get_phys_time(); 
 }
 
 void vcpu_enter(){
+    // once vm is back alive, update for how long it was dead.
     uint64_t current_time = get_phys_time();
     uint64_t time_inactive = current_time - current->cpu.system_timer_regs.last_recorded_physical_timer_count;
     current->cpu.system_timer_regs.time_not_active += time_inactive;
+}
+
+uint8_t check_irq_pending(){
+    return current->cpu.read_intctl(IRQ_BASIC_PENDING) != 0;    // check of an irq is still unserviced in this vcpu.
+}
+
+uint8_t check_fiq_pending(){
+
 }
