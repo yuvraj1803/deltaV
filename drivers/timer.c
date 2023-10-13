@@ -36,6 +36,6 @@ uint64_t get_phys_time(){
 }
 
 uint64_t get_virt_time(struct vm* _vm){
-	return get_phys_timer() - _vm->cpu.system_timer_regs.time_not_active;
+	return get_phys_time() - _vm->cpu.system_timer_regs.time_not_active;
 }
 

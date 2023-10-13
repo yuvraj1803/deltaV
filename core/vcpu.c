@@ -61,9 +61,9 @@ uint64_t read_systimer(uint64_t addr){
         case TIMER_CS:
             return current->cpu.system_timer_regs.cs;
         case TIMER_CHI:
-            return get_virt_timer(current) >> 32;
+            return get_virt_time(current) >> 32;
         case TIMER_CLO:
-            return get_virt_timer(current) & 0xffffffff;
+            return get_virt_time(current) & 0xffffffff;
         case TIMER_C0:
             return current->cpu.system_timer_regs.c0;
         case TIMER_C1:
@@ -73,6 +73,8 @@ uint64_t read_systimer(uint64_t addr){
         case TIMER_C3:
             return current->cpu.system_timer_regs.c3;
     }
+
+    return 0;
 }
 uint64_t read_gpio(uint64_t addr){
     // gpio read functionality will be added later.
@@ -183,11 +185,11 @@ void vcpu_initialise(struct vcpu* cpu){
 }
 
 void vcpu_exit(){
-    current->cpu.system_timer_regs.last_recorded_physical_timer_count = get_phys_timer(); 
+    current->cpu.system_timer_regs.last_recorded_physical_timer_count = get_phys_time(); 
 }
 
 void vcpu_enter(){
-    uint64_t current_time = get_phys_timer();
+    uint64_t current_time = get_phys_time();
     uint64_t time_inactive = current_time - current->cpu.system_timer_regs.last_recorded_physical_timer_count;
     current->cpu.system_timer_regs.time_not_active += time_inactive;
 }

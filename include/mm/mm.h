@@ -58,7 +58,7 @@
 #define TIMER_CHI	(TIMER_BASE + 0x8)
 #define TIMER_C0	(TIMER_BASE + 0xc)
 #define TIMER_C1	(TIMER_BASE + 0x10)
-#define TIMER_C2	(TIMER_BASE + 0x14
+#define TIMER_C2	(TIMER_BASE + 0x14)
 #define TIMER_C3	(TIMER_BASE + 0x18)
 #define TIMER_CS_M0	(1U << 0)
 #define TIMER_CS_M1	(1U << 1)
