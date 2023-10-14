@@ -4,10 +4,15 @@
 #include "config.h"
 
 struct vm_console{
-	int in;
-	int out;
+	int begin;
+	int end;
 	char buffer[CONFIG_VM_CONSOLE_BUFFER_SIZE];
+	int used;
 };
 
+void console_push(struct vm_console*, int val);
+int console_pop(struct vm_console*);
+int console_empty(struct vm_console*);
+void console_clear(struct vm_console*);
 
 #endif
