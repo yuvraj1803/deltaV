@@ -4,6 +4,7 @@
 #include "core/vm.h"
 #include "drivers/timer.h"
 #include "stdio.h"
+#include "core/console.h"
 
 #define MMIO_IRQ_BEGIN      IRQ_BASIC_PENDING
 #define MMIO_IRQ_END        DISABLE_IRQs_2
@@ -15,6 +16,7 @@
 #define MMIO_TIMER_END      TIMER_C3
 
 #define FIQ_ENABLE			(1U << 7)
+#define AUX_MU_LCR_DLAB     (1U << 7)
 
 extern struct vm* current;
 
@@ -58,6 +60,8 @@ uint64_t read_intctl(struct vm* _vm, uint64_t addr){
             return ~_vm->cpu.interrupt_regs.enabled_basic_irqs;
             break;    
     }
+
+    return 0;
 }
 uint64_t read_systimer(struct vm* _vm, uint64_t addr){
     switch(addr){
@@ -82,6 +86,8 @@ uint64_t read_systimer(struct vm* _vm, uint64_t addr){
 uint64_t read_gpio(struct vm* _vm, uint64_t addr){
     // gpio read functionality will be added later.
     printf("GPIO read at: %x\n", addr);
+
+    return 0;
 }
 uint64_t read_mmio(struct vm* _vm, uint64_t addr){
     
@@ -101,10 +107,60 @@ uint64_t read_mmio(struct vm* _vm, uint64_t addr){
 
     return 0;
 }
-    
 
 static void write_aux_mu(struct vm* _vm, uint64_t addr, uint64_t val){   // mini UART aux write.
     if((addr >= AUX_MU_IO_REG && addr <= AUX_MU_BAUD_REG && (_vm->cpu.aux_regs.aux_enables & 1)) == 0) return;
+
+    switch(addr){
+        case AUX_ENABLES:
+            _vm->cpu.aux_regs.aux_enables = val;
+            break;
+        
+        // for AUX_MU_IO_REG and AUX_MU_IER_REG, if the DLAB bit is set in the AUX_MU_LCR_REG, the access is given to the AUX_MU_BAUD_REG
+        // AUX_MU_IO_REG gives us access to the least significant 8 bits in LCR
+        // AUX_MU_IER_REG gives us access to the most significant 8 bits in the LCR (out of 16 bits).
+        // Hence we need to check this explicitly.
+        // For more information read the Broadcom BCM2835 Manual.
+        case AUX_MU_IO_REG:
+            if(_vm->cpu.aux_regs.aux_mu_lcr_reg & AUX_MU_LCR_DLAB){
+                _vm->cpu.aux_regs.aux_mu_lcr_reg &= ~AUX_MU_LCR_DLAB;
+                _vm->cpu.aux_regs.aux_mu_baud_reg = (_vm->cpu.aux_regs.aux_mu_baud_reg & 0xff) | (val & 0xff);
+            }else{
+                console_push(&_vm->output_console, val);    // push the given value to the vm's output console.
+            }
+            break;
+        case AUX_MU_IER_REG:
+             if(_vm->cpu.aux_regs.aux_mu_lcr_reg & AUX_MU_LCR_DLAB){
+                _vm->cpu.aux_regs.aux_mu_baud_reg = (_vm->cpu.aux_regs.aux_mu_baud_reg & 0xff00) | (val & 0xff);
+            }else{
+                _vm->cpu.aux_regs.aux_mu_ier_reg = val;
+            }
+            break;
+        case AUX_MU_IIR_REG:
+            if(val & 0x2){
+                console_clear(&_vm->input_console);  // clear the input console for the vm.
+            }else{
+                console_clear(&_vm->output_console); // clear the output console for the vm.
+            }
+            break;
+        case AUX_MU_LCR_REG:
+            _vm->cpu.aux_regs.aux_mu_lcr_reg = val;
+            break;
+        case AUX_MU_MCR_REG:
+            _vm->cpu.aux_regs.aux_mu_mcr_reg = val;
+            break; 
+        case AUX_MU_SCRATCH:
+            _vm->cpu.aux_regs.aux_mu_scratch = val;
+            break;
+        case AUX_MU_CNTL_REG:
+            _vm->cpu.aux_regs.aux_mu_cntl_reg = val;
+            break;
+        case AUX_MU_BAUD_REG:
+            _vm->cpu.aux_regs.aux_mu_baud_reg = val;
+            break;
+
+    }
+
 }
 
 void write_aux(struct vm* _vm, uint64_t addr,uint64_t val){
