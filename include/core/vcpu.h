@@ -3,23 +3,23 @@
 
 #include <stdint.h>
 
-
+struct vm;
 struct vcpu{
 
-    uint64_t (*read_aux)        (uint64_t);
-    uint64_t (*read_intctl)     (uint64_t);
-    uint64_t (*read_systimer)   (uint64_t);
-    uint64_t (*read_gpio)       (uint64_t);
-    uint64_t (*read_mmio)       (uint64_t);
+    uint64_t (*read_aux)        (struct vm*, uint64_t);
+    uint64_t (*read_intctl)     (struct vm*, uint64_t);
+    uint64_t (*read_systimer)   (struct vm*, uint64_t);
+    uint64_t (*read_gpio)       (struct vm*, uint64_t);
+    uint64_t (*read_mmio)       (struct vm*, uint64_t);
     
-    void (*write_aux)        (uint64_t,uint64_t);
-    void (*write_intctl)     (uint64_t,uint64_t);
-    void (*write_systimer)   (uint64_t,uint64_t);
-    void (*write_gpio)       (uint64_t,uint64_t);
-    void (*write_mmio)       (uint64_t,uint64_t);
+    void (*write_aux)        (struct vm*, uint64_t,uint64_t);
+    void (*write_intctl)     (struct vm*, uint64_t,uint64_t);
+    void (*write_systimer)   (struct vm*, uint64_t,uint64_t);
+    void (*write_gpio)       (struct vm*, uint64_t,uint64_t);
+    void (*write_mmio)       (struct vm*, uint64_t,uint64_t);
 
-	uint8_t (*check_irq_pending)();
-	uint8_t (*check_fiq_pending)();
+	uint8_t (*check_irq_pending)(struct vm*);
+	uint8_t (*check_fiq_pending)(struct vm*);
 
 
 	struct context{

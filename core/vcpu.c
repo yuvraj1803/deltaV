@@ -3,6 +3,7 @@
 #include "mm/mm.h"
 #include "core/vm.h"
 #include "drivers/timer.h"
+#include "stdio.h"
 
 #define MMIO_IRQ_BEGIN      IRQ_BASIC_PENDING
 #define MMIO_IRQ_END        DISABLE_IRQs_2
@@ -17,166 +18,172 @@
 
 extern struct vm* current;
 
-uint64_t read_aux(uint64_t addr){
+uint64_t read_aux(struct vm* _vm, uint64_t addr){
 
 }
 
 // there are common registers to hold all enabled interrupts.
 // this is done to eliminate the necessity for enable AND disable irq regs and to make the implementation simpler.
 // when interrupts are enabled, bits are set and when disabled its reset in this same register. check enabled_irqs_1,3,basic.
-uint64_t read_intctl(uint64_t addr){
+uint64_t read_intctl(struct vm* _vm, uint64_t addr){
     switch (addr){
         case IRQ_BASIC_PENDING:
-            return ((read_intctl(IRQ_PENDING_1) != 0) << 8) | ((read_intctl(IRQ_PENDING_2) != 0) << 9);
+            return ((read_intctl(_vm,IRQ_PENDING_1) != 0) << 8) | ((read_intctl(_vm,IRQ_PENDING_2) != 0) << 9);
          case IRQ_PENDING_1:
-            uint32_t is_timer1_pending = (current->cpu.interrupt_regs.enabled_irqs_1 & (1U << 1)) && (current->cpu.system_timer_regs.cs & TIMER_CS_M1);
-            uint32_t is_timer3_pending = (current->cpu.interrupt_regs.enabled_irqs_1 & (1U << 3)) && (current->cpu.system_timer_regs.cs & TIMER_CS_M3);
+            uint32_t is_timer1_pending = (_vm->cpu.interrupt_regs.enabled_irqs_1 & (1U << 1)) && (_vm->cpu.system_timer_regs.cs & TIMER_CS_M1);
+            uint32_t is_timer3_pending = (_vm->cpu.interrupt_regs.enabled_irqs_1 & (1U << 3)) && (_vm->cpu.system_timer_regs.cs & TIMER_CS_M3);
             return (is_timer1_pending << 1) | (is_timer3_pending << 3);
         case IRQ_PENDING_2:
-            uint32_t is_uart_pending = (current->cpu.interrupt_regs.enabled_irqs_2 & (57-32)) && (read_aux(AUX_IRQ) & 1);
+            uint32_t is_uart_pending = (_vm->cpu.interrupt_regs.enabled_irqs_2 & (57-32)) && (read_aux(_vm,AUX_IRQ) & 1);
             return is_uart_pending << (57 - 32);
         case FIQ_CONTROL:
-            return current->cpu.interrupt_regs.fiq_control;
+            return _vm->cpu.interrupt_regs.fiq_control;
             break;
         case ENABLE_IRQs_1:
-            return current->cpu.interrupt_regs.enabled_irqs_1;
+            return _vm->cpu.interrupt_regs.enabled_irqs_1;
             break;
         case ENABLE_IRQs_2:
-            return current->cpu.interrupt_regs.enabled_irqs_2;
+            return _vm->cpu.interrupt_regs.enabled_irqs_2;
             break;
         case ENABLE_BASIC_IRQs:
-            return current->cpu.interrupt_regs.enabled_basic_irqs;
+            return _vm->cpu.interrupt_regs.enabled_basic_irqs;
             break;
         case DISABLE_IRQs_1:
-            return ~current->cpu.interrupt_regs.enabled_irqs_1;
+            return ~_vm->cpu.interrupt_regs.enabled_irqs_1;
             break;
         case DISABLE_IRQs_2:
-            return ~current->cpu.interrupt_regs.enabled_irqs_2;
+            return ~_vm->cpu.interrupt_regs.enabled_irqs_2;
             break;
         case DISABLE_BASIC_IRQs:
-            return ~current->cpu.interrupt_regs.enabled_basic_irqs;
+            return ~_vm->cpu.interrupt_regs.enabled_basic_irqs;
             break;    
     }
 }
-uint64_t read_systimer(uint64_t addr){
+uint64_t read_systimer(struct vm* _vm, uint64_t addr){
     switch(addr){
         case TIMER_CS:
-            return current->cpu.system_timer_regs.cs;
+            return _vm->cpu.system_timer_regs.cs;
         case TIMER_CHI:
-            return get_virt_time(current) >> 32;
+            return get_virt_time(_vm) >> 32;
         case TIMER_CLO:
-            return get_virt_time(current) & 0xffffffff;
+            return get_virt_time(_vm) & 0xffffffff;
         case TIMER_C0:
-            return current->cpu.system_timer_regs.c0;
+            return _vm->cpu.system_timer_regs.c0;
         case TIMER_C1:
-            return current->cpu.system_timer_regs.c1;
+            return _vm->cpu.system_timer_regs.c1;
         case TIMER_C2:
-            return current->cpu.system_timer_regs.c2;
+            return _vm->cpu.system_timer_regs.c2;
         case TIMER_C3:
-            return current->cpu.system_timer_regs.c3;
+            return _vm->cpu.system_timer_regs.c3;
     }
 
     return 0;
 }
-uint64_t read_gpio(uint64_t addr){
+uint64_t read_gpio(struct vm* _vm, uint64_t addr){
     // gpio read functionality will be added later.
     printf("GPIO read at: %x\n", addr);
 }
-uint64_t read_mmio(uint64_t addr){
+uint64_t read_mmio(struct vm* _vm, uint64_t addr){
     
     if(addr >= MMIO_IRQ_BEGIN && addr <= MMIO_IRQ_END){
         // printf("IRQ read at: %x\n", addr);
-        return current->cpu.read_intctl(addr);
+        return _vm->cpu.read_intctl(_vm,addr);
     }else if(addr >= MMIO_AUX_BEGIN && addr <= MMIO_AUX_END){
         // printf("AUX read at: %x\n", addr);
-        return current->cpu.read_aux(addr);
+        return _vm->cpu.read_aux(_vm,addr);
     }else if(addr >= MMIO_GPIO_BEGIN && addr <= MMIO_IRQ_END){
         // printf("GPIO read at: %x\n", addr);
-        return current->cpu.read_gpio(addr);
+        return _vm->cpu.read_gpio(_vm,addr);
     }else if(addr >= MMIO_TIMER_BEGIN && addr <= MMIO_TIMER_END){
         // printf("TIMER read at: %x\n", addr);
-        return current->cpu.read_systimer(addr);
+        return _vm->cpu.read_systimer(_vm,addr);
     }
 
     return 0;
 }
     
-void write_aux(uint64_t addr,uint64_t val){
 
+static void write_aux_mu(struct vm* _vm, uint64_t addr, uint64_t val){   // mini UART aux write.
+    if((addr >= AUX_MU_IO_REG && addr <= AUX_MU_BAUD_REG && (_vm->cpu.aux_regs.aux_enables & 1)) == 0) return;
 }
 
-void write_intctl(uint64_t addr,uint64_t val){
+void write_aux(struct vm* _vm, uint64_t addr,uint64_t val){
+    write_aux_mu(_vm, addr, val);
+    // AUX SPIx modules are not yet supported.
+}
+
+void write_intctl(struct vm* _vm, uint64_t addr,uint64_t val){
     
     switch (addr){
         case FIQ_CONTROL:
-            current->cpu.interrupt_regs.fiq_control = val;
+            _vm->cpu.interrupt_regs.fiq_control = val;
             break;
         case ENABLE_IRQs_1:
-            current->cpu.interrupt_regs.enable_irqs_1 = 1;
-            current->cpu.interrupt_regs.enabled_irqs_1 |= val;
+            _vm->cpu.interrupt_regs.enable_irqs_1 = 1;
+            _vm->cpu.interrupt_regs.enabled_irqs_1 |= val;
             break;
         case ENABLE_IRQs_2:
-            current->cpu.interrupt_regs.enable_irqs_2 = 1;
-            current->cpu.interrupt_regs.enabled_irqs_2 |= val;
+            _vm->cpu.interrupt_regs.enable_irqs_2 = 1;
+            _vm->cpu.interrupt_regs.enabled_irqs_2 |= val;
             break;
         case ENABLE_BASIC_IRQs:
-            current->cpu.interrupt_regs.enable_basic_irqs = val;
-            current->cpu.interrupt_regs.enabled_basic_irqs |= val;
+            _vm->cpu.interrupt_regs.enable_basic_irqs = val;
+            _vm->cpu.interrupt_regs.enabled_basic_irqs |= val;
             break;
         case DISABLE_IRQs_1:
-            current->cpu.interrupt_regs.disable_irqs_1 = val;
-            current->cpu.interrupt_regs.enabled_irqs_1 &= ~val;
+            _vm->cpu.interrupt_regs.disable_irqs_1 = val;
+            _vm->cpu.interrupt_regs.enabled_irqs_1 &= ~val;
             break;
         case DISABLE_IRQs_2:
-            current->cpu.interrupt_regs.disable_irqs_2 = val;
-            current->cpu.interrupt_regs.enabled_irqs_2 &= ~val;
+            _vm->cpu.interrupt_regs.disable_irqs_2 = val;
+            _vm->cpu.interrupt_regs.enabled_irqs_2 &= ~val;
             break;
         case DISABLE_BASIC_IRQs:
-            current->cpu.interrupt_regs.disable_basic_irqs = val;
-            current->cpu.interrupt_regs.enabled_basic_irqs &= ~val;
+            _vm->cpu.interrupt_regs.disable_basic_irqs = val;
+            _vm->cpu.interrupt_regs.enabled_basic_irqs &= ~val;
             break;
     }
 
 }
 
-void write_systimer(uint64_t addr,uint64_t val){
+void write_systimer(struct vm* _vm, uint64_t addr,uint64_t val){
     switch(addr){
         case TIMER_CS:
-            current->cpu.system_timer_regs.cs &= ~val;
+            _vm->cpu.system_timer_regs.cs &= ~val;
             break;
         case TIMER_C0:
-            current->cpu.system_timer_regs.c0 = val;
+            _vm->cpu.system_timer_regs.c0 = val;
             break;
         case TIMER_C1:
-            current->cpu.system_timer_regs.c1 = val;
+            _vm->cpu.system_timer_regs.c1 = val;
             break;
         case TIMER_C2:
-            current->cpu.system_timer_regs.c2 = val;
+            _vm->cpu.system_timer_regs.c2 = val;
             break;
         case TIMER_C3:
-            current->cpu.system_timer_regs.c3 = val;
+            _vm->cpu.system_timer_regs.c3 = val;
             break;
     }
 }
 
-void write_gpio(uint64_t addr,uint64_t val){
+void write_gpio(struct vm* _vm, uint64_t addr,uint64_t val){
      // gpio read functionality will be added later.
     printf("GPIO write at: %x\n", addr);
 }
 
-void write_mmio(uint64_t addr,uint64_t val){
+void write_mmio(struct vm* _vm, uint64_t addr,uint64_t val){
 
     if(addr >= MMIO_IRQ_BEGIN && addr <= MMIO_IRQ_END){
-        current->cpu.write_intctl(addr, val);
+        _vm->cpu.write_intctl(_vm,addr, val);
         // printf("IRQ write at: %x\n", addr);
     }else if(addr >= MMIO_AUX_BEGIN && addr <= MMIO_AUX_END){
-        current->cpu.write_aux(addr, val);
+        _vm->cpu.write_aux(_vm,addr, val);
         // printf("AUX write at: %x\n", addr);
     }else if(addr >= MMIO_GPIO_BEGIN && addr <= MMIO_IRQ_END){
-        current->cpu.write_gpio(addr, val);
+        _vm->cpu.write_gpio(_vm,addr, val);
         // printf("GPIO write at: %x\n", addr);
     }else if(addr >= MMIO_TIMER_BEGIN && addr <= MMIO_TIMER_END){
-        current->cpu.write_systimer(addr, val);
+        _vm->cpu.write_systimer(_vm,addr, val);
         // printf("TIMER write at: %x\n", addr);
     }
     
@@ -194,28 +201,28 @@ void vcpu_enter(){
     current->cpu.system_timer_regs.time_not_active += time_inactive;
 }
 
-uint8_t check_irq_pending(){
-    return current->cpu.read_intctl(IRQ_BASIC_PENDING) != 0;    // check of an irq is still unserviced in this vcpu.
+uint8_t check_irq_pending(struct vm* _vm){
+    return _vm->cpu.read_intctl(_vm,IRQ_BASIC_PENDING) != 0;    // check of an irq is still unserviced in this vcpu.
 }
 
-uint8_t check_fiq_pending(){
+uint8_t check_fiq_pending(struct vm* _vm){
 
-    if((current->cpu.interrupt_regs.fiq_control & FIQ_ENABLE) == 0) return 0;   // fiqs are not enabled at all.
+    if((_vm->cpu.interrupt_regs.fiq_control & FIQ_ENABLE) == 0) return 0;   // fiqs are not enabled at all.
 
-    int enabled_fiqs = current->cpu.interrupt_regs.fiq_control & 0b1111111;
+    int enabled_fiqs = _vm->cpu.interrupt_regs.fiq_control & 0b1111111;
 
     if(enabled_fiqs >= 0 && enabled_fiqs <= 31){
-        int pending_interrupts = current->cpu.read_intctl(IRQ_PENDING_1);
+        int pending_interrupts = _vm->cpu.read_intctl(_vm,IRQ_PENDING_1);
         return pending_interrupts & (1U << enabled_fiqs);
     }
 
     if(enabled_fiqs >= 32 && enabled_fiqs <= 63){
-        int pending_interrupts = current->cpu.read_intctl(IRQ_PENDING_2);
+        int pending_interrupts = _vm->cpu.read_intctl(_vm,IRQ_PENDING_2);
         return pending_interrupts & (1U << (enabled_fiqs-32));
     }
 
     if(enabled_fiqs >= 64 && enabled_fiqs <= 71){
-        int pending_interrupts = current->cpu.read_intctl(IRQ_BASIC_PENDING);
+        int pending_interrupts = _vm->cpu.read_intctl(_vm,IRQ_BASIC_PENDING);
         return pending_interrupts & (1U << (enabled_fiqs - 64));
     }
 

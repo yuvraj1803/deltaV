@@ -129,9 +129,9 @@ int8_t handle_sync_data_abort(uint64_t esr_el2, uint64_t far_el2){
         struct pt_regs* regs = get_vm_pt_regs(current);
 
         if(!WnR){
-            regs->regs[SRT] = current->cpu.read_mmio(far_el2);
+            regs->regs[SRT] = current->cpu.read_mmio(current, far_el2);
         }else{
-            current->cpu.write_mmio(far_el2, regs->regs[SRT]);
+            current->cpu.write_mmio(current,far_el2, regs->regs[SRT]);
         }
 
         regs->pc += 4;
