@@ -32,7 +32,8 @@ struct vm{
 	uint8_t state;
 	struct vaddr_space* virtual_address_space;
 	struct vcpu cpu;
-	struct vm_console console;
+	struct vm_console input_console;
+	struct vm_console output_console;
 	struct vm_info info;
 
 	uint64_t* vmdata;

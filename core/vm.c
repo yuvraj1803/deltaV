@@ -99,10 +99,15 @@ struct vm* vm_init(char* name, uint64_t sp, uint64_t entry, uint64_t base){
 	get_sysregs(&_vm->cpu.sysregs);
 	_vm->cpu.sysregs.sctlr_el1 &= ~1;	// disable MMU.
 
-	_vm->console.begin = 0;
-	_vm->console.end = 0;
-	_vm->console.used = 0;
-	memset(_vm->console.buffer, 0, sizeof(_vm->console.buffer));
+	_vm->input_console.begin = 0;
+	_vm->input_console.end = 0;
+	_vm->input_console.used = 0;
+	memset(_vm->input_console.buffer, 0, sizeof(_vm->input_console.buffer));
+
+	_vm->output_console.begin = 0;
+	_vm->output_console.end = 0;
+	_vm->output_console.used = 0;
+	memset(_vm->output_console.buffer, 0, sizeof(_vm->output_console.buffer));
 	
 	_vm->virtual_address_space = create_virtual_address_space(MMU_STAGE_2_MEM_FLAGS, MMU_STAGE_2_MMIO_FLAGS); // we will initialise this later when loading the vm into virtual memory.
 
