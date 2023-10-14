@@ -18,6 +18,9 @@ struct vcpu{
     void (*write_gpio)       (uint64_t,uint64_t);
     void (*write_mmio)       (uint64_t,uint64_t);
 
+	uint8_t (*check_irq_pending)();
+	uint8_t (*check_fiq_pending)();
+
 
 	struct context{
 		uint64_t x19;
