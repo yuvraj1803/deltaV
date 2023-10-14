@@ -14,5 +14,6 @@ void console_push(struct vm_console*, int val);
 int console_pop(struct vm_console*);
 int console_empty(struct vm_console*);
 void console_clear(struct vm_console*);
+int console_full(struct vm_console* console);
 
 #endif
