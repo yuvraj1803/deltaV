@@ -9,7 +9,7 @@ void console_push(struct vm_console* console, int val){
 }
 
 int console_pop(struct vm_console* console){
-    if(console_empty(console)) return;
+    if(console_empty(console)) return -1;
 
     int out = console->buffer[console->end];
     console->end = (console->end + 1) % CONFIG_VM_CONSOLE_BUFFER_SIZE;
