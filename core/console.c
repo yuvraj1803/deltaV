@@ -15,7 +15,7 @@ int console_pop(struct vm_console* console){
     console->end = (console->end + 1) % CONFIG_VM_CONSOLE_BUFFER_SIZE;
     console->used--;
 
-    return out;
+    return out & 0xff;
 }
 
 int console_full(struct vm_console* console){
