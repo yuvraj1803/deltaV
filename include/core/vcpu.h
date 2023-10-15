@@ -132,6 +132,7 @@ struct vcpu{
 		uint32_t aux_mu_lcr_reg;
 		uint32_t aux_mu_mcr_reg;
 		uint32_t aux_mu_lsr_reg;
+		uint32_t aux_mu_msr_reg;
 		uint32_t aux_mu_scratch;
 		uint32_t aux_mu_cntl_reg;
 		uint32_t aux_mu_stat_reg;
