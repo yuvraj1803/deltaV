@@ -137,6 +137,8 @@ struct vcpu{
 		uint32_t aux_mu_cntl_reg;
 		uint32_t aux_mu_stat_reg;
 		uint32_t aux_mu_baud_reg;
+
+		uint8_t reciever_overrun;
 	} aux_regs;
 
 	struct system_timer_regs{
