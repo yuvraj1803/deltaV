@@ -19,9 +19,85 @@
 #define AUX_MU_LCR_DLAB     (1U << 7)
 
 extern struct vm* current;
+static uint64_t read_aux_mu(struct vm* _vm, uint64_t addr){
+    if((addr >= AUX_MU_IO_REG && addr <= AUX_MU_BAUD_REG && (_vm->cpu.aux_regs.aux_enables & 1)) == 0) return 0;  // Invalid AUX address being read or AUX MU not enabled.
+
+    switch(addr){
+        case AUX_IRQ:
+            return ~(read_aux_mu(_vm, AUX_MU_IIR_REG) & 1);  // bit 0 of IIR reg is cleared if there is a pending interrupt.
+        case AUX_ENABLES:
+            return _vm->cpu.aux_regs.aux_enables;
+        case AUX_MU_IO_REG:
+            if(_vm->cpu.aux_regs.aux_mu_lcr_reg & AUX_MU_LCR_DLAB){
+                return _vm->cpu.aux_regs.aux_mu_baud_reg & 0xff;
+            }else{
+                return console_pop(&_vm->output_console);
+            }
+        case AUX_MU_IER_REG:
+            if(_vm->cpu.aux_regs.aux_mu_lcr_reg & AUX_MU_LCR_DLAB){
+                return _vm->cpu.aux_regs.aux_mu_baud_reg >> 8;
+            }else{
+                return _vm->cpu.aux_regs.aux_mu_ier_reg;
+            }
+        case AUX_MU_IIR_REG:
+            int transmit_holding_register_empty = console_empty(&_vm->output_console);
+            int reciever_holds_valid_byte = !console_empty(&_vm->input_console);
+
+            int pending = ((transmit_holding_register_empty && (_vm->cpu.aux_regs.aux_mu_ier_reg & 0x2)) | ((reciever_holds_valid_byte && (_vm->cpu.aux_regs.aux_mu_ier_reg & 0x1)) << 1));
+            if(pending == 0b11) pending = 0b1;      // bits [1:2] being 0b11 is not possible according to bcm manual.
+            return ((pending == 0) | (pending << 1) | (0b11 << 6));
+        case AUX_MU_LCR_REG:
+            return _vm->cpu.aux_regs.aux_mu_lcr_reg;
+        case AUX_MU_MCR_REG:
+            return _vm->cpu.aux_regs.aux_mu_mcr_reg;
+        case AUX_MU_LSR_REG:
+            int data_ready = !console_empty(&_vm->input_console);
+            int reciever_overrun = _vm->cpu.aux_regs.reciever_overrun;
+            int transmitter_empty = !console_full(&_vm->output_console);
+            int transmitter_idle = console_empty(&_vm->output_console);
+
+            _vm->cpu.aux_regs.reciever_overrun = 0; // receiver overrun is always reset when LSR is read.
+
+            return ((data_ready << 0) | (reciever_overrun << 1) | (transmitter_empty << 5) | (transmitter_idle << 6));
+        case AUX_MU_MSR_REG:
+            return _vm->cpu.aux_regs.aux_mu_msr_reg;
+        case AUX_MU_SCRATCH:
+            return _vm->cpu.aux_regs.aux_mu_scratch;
+        case AUX_MU_CNTL_REG:
+            return _vm->cpu.aux_regs.aux_mu_cntl_reg;
+        case AUX_MU_STAT_REG:
+            int symbol_available = !console_empty(&_vm->input_console);
+            int space_available =  !console_full(&_vm->output_console);
+            int reciever_idle = console_empty(&_vm->input_console);
+                transmitter_idle = !console_empty(&_vm->output_console);
+                reciever_overrun = _vm->cpu.aux_regs.reciever_overrun;
+            int transmit_fifo_full = !space_available;
+            int transmit_fifo_empty = console_empty(&_vm->output_console);
+            int transmitter_done = reciever_idle & transmit_fifo_empty;
+            int recieve_fifo_fill_level = (_vm->input_console.used > 8 ? 8 : _vm->input_console.used);
+            int transmit_fifo_fill_level = (_vm->output_console.used > 8 ? 8 : _vm->output_console.used);;
+
+            return ((symbol_available           << 0) |
+                    (space_available            << 1) |
+                    (reciever_idle              << 2) |
+                    (transmitter_idle           << 3) |
+                    (reciever_overrun           << 4) |
+                    (transmit_fifo_full         << 5) |
+                    (transmit_fifo_empty        << 8) |
+                    (transmitter_done           << 9) |
+                    (recieve_fifo_fill_level    << 16)|
+                    (transmit_fifo_fill_level   << 24));
+        case AUX_MU_BAUD_REG:
+            return _vm->cpu.aux_regs.aux_mu_baud_reg;
+
+    }
+
+    return 0;
+}
 
 uint64_t read_aux(struct vm* _vm, uint64_t addr){
-
+    return read_aux_mu(_vm, addr);
+    // SPIx support is not added yet.
 }
 
 // there are common registers to hold all enabled interrupts.
