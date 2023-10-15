@@ -10,7 +10,7 @@ void uart_init(){
 	mm_w(AUX_MU_CNTL_REG,0);
 	mm_w(AUX_MU_LCR_REG, 3); // uart 8-bit mode
 	mm_w(AUX_MU_MCR_REG, 0);
-	mm_w(AUX_MU_IER_REG, 0);
+	mm_w(AUX_MU_IER_REG, 1);
 	mm_w(AUX_MU_IIR_REG, 0xc6);
 	mm_w(AUX_MU_BAUD_REG, 270); // 115200 baudrate
 	mm_w(GPFSEL1, mm_r(GPFSEL1)& ~((0b11 << 12 | 0b11 << 15))); // reset GPIO Pins 14 and 15
@@ -79,4 +79,7 @@ void uart_write_hex(unsigned long long x){
         uart_tx(n);
     }
 
+}
+
+void uart_handler(){
 }
