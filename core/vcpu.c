@@ -20,13 +20,10 @@
 
 extern struct vm* current;
 static uint64_t read_aux_mu(struct vm* _vm, uint64_t addr){
-    if((addr >= AUX_MU_IO_REG && addr <= AUX_MU_BAUD_REG && (_vm->cpu.aux_regs.aux_enables & 1)) == 0) return 0;  // Invalid AUX address being read or AUX MU not enabled.
+    if((addr >= AUX_MU_IO_REG && addr <= AUX_MU_BAUD_REG) && ((_vm->cpu.aux_regs.aux_enables & 1) == 0)) return 0;  // Invalid AUX MU address being read or AUX MU not enabled.
 
     switch(addr){
-        case AUX_IRQ:
-            return ~(read_aux_mu(_vm, AUX_MU_IIR_REG) & 1);  // bit 0 of IIR reg is cleared if there is a pending interrupt.
-        case AUX_ENABLES:
-            return _vm->cpu.aux_regs.aux_enables;
+        
         case AUX_MU_IO_REG:
             if(_vm->cpu.aux_regs.aux_mu_lcr_reg & AUX_MU_LCR_DLAB){
                 return _vm->cpu.aux_regs.aux_mu_baud_reg & 0xff;
@@ -96,8 +93,19 @@ static uint64_t read_aux_mu(struct vm* _vm, uint64_t addr){
 }
 
 uint64_t read_aux(struct vm* _vm, uint64_t addr){
-    return read_aux_mu(_vm, addr);
-    // SPIx support is not added yet.
+    if(addr >= AUX_MU_IO_REG && addr <= AUX_MU_BAUD_REG) return read_aux_mu(_vm, addr);
+    // SPIx support is not added yet
+
+    switch(addr){
+        case AUX_IRQ:
+            return ~(read_aux_mu(_vm, AUX_MU_IIR_REG) & 1);  // bit 0 of IIR reg is cleared if there is a pending interrupt.
+        case AUX_ENABLES:
+            return _vm->cpu.aux_regs.aux_enables;
+    }
+
+
+    return 0;
+
 }
 
 // there are common registers to hold all enabled interrupts.
@@ -185,12 +193,9 @@ uint64_t read_mmio(struct vm* _vm, uint64_t addr){
 }
 
 static void write_aux_mu(struct vm* _vm, uint64_t addr, uint64_t val){   // mini UART aux write.
-    if((addr >= AUX_MU_IO_REG && addr <= AUX_MU_BAUD_REG && (_vm->cpu.aux_regs.aux_enables & 1)) == 0) return;
+    if((addr >= AUX_MU_IO_REG && addr <= AUX_MU_BAUD_REG) && (_vm->cpu.aux_regs.aux_enables & 1) == 0) return;
 
     switch(addr){
-        case AUX_ENABLES:
-            _vm->cpu.aux_regs.aux_enables = val;
-            break;
         
         // for AUX_MU_IO_REG and AUX_MU_IER_REG, if the DLAB bit is set in the AUX_MU_LCR_REG, the access is given to the AUX_MU_BAUD_REG
         // AUX_MU_IO_REG gives us access to the least significant 8 bits in LCR
@@ -240,8 +245,18 @@ static void write_aux_mu(struct vm* _vm, uint64_t addr, uint64_t val){   // mini
 }
 
 void write_aux(struct vm* _vm, uint64_t addr,uint64_t val){
-    write_aux_mu(_vm, addr, val);
+    if(addr >= AUX_MU_IO_REG && addr <= AUX_MU_BAUD_REG) {
+        write_aux_mu(_vm, addr, val);
+        return;
+    }
     // AUX SPIx modules are not yet supported.
+
+    switch(addr){        
+        case AUX_ENABLES:
+            _vm->cpu.aux_regs.aux_enables = val;
+            break;
+    }
+
 }
 
 void write_intctl(struct vm* _vm, uint64_t addr,uint64_t val){
