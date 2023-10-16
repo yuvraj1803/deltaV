@@ -22,13 +22,15 @@ void gets(char* str){
 		ch = uart_rx();
 		if(ch == '\n'){
 			uart_tx('\n');
-			return;
+			break;
 		}
 		if(ch == 127) continue; // backspace
 		str[index] = ch;
 		index++;
 		uart_tx(ch);
 	}
+
+	str[index] = '\0';
 
 }
 
