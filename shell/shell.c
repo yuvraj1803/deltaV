@@ -7,7 +7,7 @@
 #include "core/vm.h"
 
 // prototypes for shell commands
-void ls();
+void list();
 
 struct shell* delta_shell;
 
@@ -21,9 +21,6 @@ struct shell_command{
 };
 
 struct shell{
-    uint64_t in;
-    uint64_t out;
-    char buffer[CONFIG_SHELL_BUFFER_SIZE];
     struct shell_command* commands[CONFIG_MAX_SHELL_COMMANDS];
 };
 
@@ -72,14 +69,14 @@ void shell_init(){
     memset(delta_shell->buffer, 0, sizeof(delta_shell->buffer));
     memset(delta_shell->commands, 0, sizeof(delta_shell->commands));
 
-    add_shell_command("ls", ls);
+    add_shell_command("list", list);
 
     log("Shell initialised\n");
 }
 
 // ===================================== Shell Commands =================================================
 
-void ls(){
+void list(){
     for(int vm=0;vm<total_vms;vm++){
         printf("VMID: %d\n", vmlist[vm]->vmid);
         printf("Name: %s\n", vmlist[vm]->name);
