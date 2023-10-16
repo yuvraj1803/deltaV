@@ -20,6 +20,7 @@ void gets(char* str){
 
 	do{
 		ch = uart_rx();
+		if(ch == 127) continue; // backspace
 		str[index] = ch;
 		index++;
 		uart_tx(ch);
