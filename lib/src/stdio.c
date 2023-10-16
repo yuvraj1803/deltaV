@@ -18,13 +18,17 @@ void gets(char* str){
 	int index = 0;
 	char ch;
 
-	do{
+	while(1){
 		ch = uart_rx();
+		if(ch == '\n'){
+			uart_tx('\n');
+			return;
+		}
 		if(ch == 127) continue; // backspace
 		str[index] = ch;
 		index++;
 		uart_tx(ch);
-	}while(ch != '\n');
+	}
 
 }
 
