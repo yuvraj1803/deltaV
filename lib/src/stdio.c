@@ -53,8 +53,12 @@ void printf(char* fmt, ...){
 					uart_write(str);
 					break;
 				case 'd':
-				        val = va_arg(ap, int);
+				    val = va_arg(ap, int);
 					uart_write(itoa(val));
+					break;
+				case 'c':
+					val = va_arg(ap, int);
+					uart_tx(val);
 					break;
 				default:
 					break;
