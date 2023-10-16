@@ -1,0 +1,3 @@
+[submodule "guests/deltaOS"]
+	path = guests/deltaOS
+	url = https://github.com/yuvraj1803/deltaOS.git
