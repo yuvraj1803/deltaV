@@ -4,6 +4,7 @@
 #include "stdio.h"
 #include "drivers/timer.h"
 #include "core/misc.h"
+#include "drivers/uart.h"
 
 const char* exception_info[] = {
 	"CURRENT_EL_SP0_SYNC",
@@ -39,7 +40,7 @@ void interrupt_controller_init(){
 	mm_w32(FIQ_CONTROL, 0xc1);
 	mm_w32(ENABLE_IRQs_1, SYSTEM_TIMER_MATCH_1);
 	mm_w32(ENABLE_IRQs_1, SYSTEM_TIMER_MATCH_3);
-        mm_w32(ENABLE_IRQs_1, AUX_INT);
+    mm_w32(ENABLE_IRQs_1, AUX_INT);
 
 	log("IRQ initialised");
 	log("Interrupt Controller initialised");
@@ -56,8 +57,15 @@ void log_unsupported_exception(uint64_t exception_type,
 
 
 void handle_irq(){
-	uint32_t pending = mm_r(IRQ_PENDING_1);
+
+	uint32_t pending = mm_r32(IRQ_PENDING_1);
+
 	if(pending & SYSTEM_TIMER_MATCH_1) system_timer_1_handler();
-	if(pending & SYSTEM_TIMER_MATCH_3) system_timer_3_handler();
+	else if(pending & SYSTEM_TIMER_MATCH_3) system_timer_3_handler();
+	else if(pending & AUX_INT) uart_handler();
+	else{
+		panic("Unknown IRQ Pending.");
+	}
+
 
 }
