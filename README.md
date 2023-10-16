@@ -1,5 +1,10 @@
 # deltaV - a baremetal hypervisor 
 
+ # Build Dependencies
+    + make
+    + qemu-system-aarch64
+    + gcc-aarch64-linux-gnu
+
  # EL3 Configuration
    **SCR.RW** - EL2 is in AArch64.
    
