@@ -4,6 +4,7 @@
 #include "core/vm.h"
 #include "drivers/timer.h"
 #include "stdio.h"
+#include "shell/shell.h"
 #include "core/console.h"
 
 #define MMIO_IRQ_BEGIN      IRQ_BASIC_PENDING
@@ -18,7 +19,9 @@
 #define FIQ_ENABLE			(1U << 7)
 #define AUX_MU_LCR_DLAB     (1U << 7)
 
+extern struct vm* vmlist[CONFIG_MAX_VMs];
 extern struct vm* current;
+
 static uint64_t read_aux_mu(struct vm* _vm, uint64_t addr){
     if((addr >= AUX_MU_IO_REG && addr <= AUX_MU_BAUD_REG) && ((_vm->cpu.aux_regs.aux_enables & 1) == 0)) return 0;  // Invalid AUX MU address being read or AUX MU not enabled.
 
@@ -337,11 +340,17 @@ void write_mmio(struct vm* _vm, uint64_t addr,uint64_t val){
 }
 
 void vcpu_exit(){
+    current->state = VM_WAITING;
+    vmlist[VMID_SHELL]->state = VM_RUNNING;
+
     // save when vm was last active physically.
     current->cpu.system_timer_regs.last_recorded_physical_timer_count = get_phys_time(); 
 }
 
 void vcpu_enter(){
+    vmlist[VMID_SHELL] = VM_WAITING;
+    current->state = VM_RUNNING;
+
     // once vm is back alive, update for how long it was dead.
     uint64_t current_time = get_phys_time();
     uint64_t time_inactive = current_time - current->cpu.system_timer_regs.last_recorded_physical_timer_count;

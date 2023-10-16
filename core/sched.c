@@ -6,6 +6,7 @@
 #include "string.h"
 #include "mm/paging.h"
 #include "mm/mm.h"
+#include "shell/shell.h"
 #include "mm/paging.h"
 
 extern struct vm* vmlist[CONFIG_MAX_VMs];
@@ -18,10 +19,11 @@ void sched_init(){
 	memset(shell_vm, 0, sizeof(struct vm));
 
 	strcpy(shell_vm->name, "Shell");
-	shell_vm->state = VM_WAITING;
-	shell_vm->vmid = 0;
+	shell_vm->state = VM_RUNNING; // shell is initially running.
+	shell_vm->vmid = VMID_SHELL;
 	total_vms++;
-	current = vmlist[0];
+	vmlist[VMID_SHELL] = shell_vm;
+	current = vmlist[VMID_SHELL];
 
 	log("Scheduler initialised");
 }
@@ -60,5 +62,9 @@ void schedule(){
 	struct vm* prev = current;
 	current = vmlist[nextvm];
 	
+	// update vm states.
+	prev->state = VM_WAITING;
+	current->state = VM_RUNNING;
+
 	switch_context(&prev->cpu.context, &current->cpu.context);
 }
