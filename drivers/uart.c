@@ -1,7 +1,10 @@
 #include "drivers/uart.h"
 #include "mm/mm.h"
 #include "stdio.h"
+#include "shell/shell.h"
 #include <stdint.h>
+
+uint8_t vm_connected_to_uart = VMID_SHELL;	// initially only hypervisor shell is connected to physical UART.	
 
 void uart_init(){
 	
@@ -82,4 +85,5 @@ void uart_write_hex(unsigned long long x){
 }
 
 void uart_handler(){
+	if(vm_connected_to_uart == VMID_SHELL) shell_run();
 }
