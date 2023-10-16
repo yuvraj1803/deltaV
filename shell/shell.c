@@ -5,6 +5,8 @@
 #include "stdio.h"
 #include "string.h"
 
+struct shell* delta_shell;
+
 struct shell_command{
     char command[CONFIG_MAX_SHELL_COMMAND_SIZE];  
     void (*command_handler)();
@@ -17,11 +19,11 @@ struct shell{
     struct shell_command* commands[CONFIG_MAX_SHELL_COMMANDS];
 };
 
-static void add_shell_command(struct shell* _shell, char command[], void (*command_handler)){
+static void add_shell_command(char command[], void (*command_handler)){
     int command_index;
 
     for(command_index = 0; command_index < CONFIG_MAX_SHELL_COMMANDS; command_index++){
-        if(_shell->commands[command_index] == 0) break;
+        if(delta_shell->commands[command_index] == 0) break;
     }
 
     if(command_index == CONFIG_MAX_SHELL_COMMANDS){
@@ -29,33 +31,32 @@ static void add_shell_command(struct shell* _shell, char command[], void (*comma
         return;
     }
 
-    _shell->commands[command_index] = (struct shell_command*) malloc(sizeof(struct shell_command));
-    strcpy(_shell->commands[command_index]->command, command);
-    _shell->commands[command_index]->command_handler = command_handler;
+    delta_shell->commands[command_index] = (struct shell_command*) malloc(sizeof(struct shell_command));
+    strcpy(delta_shell->commands[command_index]->command, command);
+    delta_shell->commands[command_index]->command_handler = command_handler;
 }
 
-void shell_run(struct shell* _shell){
+void shell_run(){
     printf(">>> ");
     char shell_input[CONFIG_MAX_SHELL_COMMAND_SIZE];
     gets(shell_input);
 
     for(int command_index=0; command_index < CONFIG_MAX_SHELL_COMMANDS; command_index++){
-        if(_shell->commands[command_index] != 0 && strcmp(shell_input, _shell->commands[command_index]->command)){
-            _shell->commands[command_index]->command_handler();
-            shell_run(_shell);
+        if(delta_shell->commands[command_index] != 0 && strcmp(shell_input, delta_shell->commands[command_index]->command)){
+            delta_shell->commands[command_index]->command_handler();
+            shell_run(delta_shell);
         }
     }
 
     printf("shell command not recognised.\n");
-    shell_run(_shell);
 }
 
 void shell_init(){
-    struct shell* _shell = (struct shell*) malloc(sizeof(struct shell));
-    _shell->in = 0;
-    _shell->out = 0;
-    memset(_shell->buffer, 0, sizeof(_shell->buffer));
-    memset(_shell->commands, 0, sizeof(_shell->commands));
+    struct shell* delta_shell = (struct shell*) malloc(sizeof(struct shell));
+    delta_shell->in = 0;
+    delta_shell->out = 0;
+    memset(delta_shell->buffer, 0, sizeof(delta_shell->buffer));
+    memset(delta_shell->commands, 0, sizeof(delta_shell->commands));
     log("Shell initialised\n");
 }
 
