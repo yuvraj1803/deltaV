@@ -25,8 +25,8 @@ int stoi(char* str){
 	int n = strlen(str);
 	int val = 0;
 	for(int i=0;i<n;i++){
-		val += str[i] - '0';
 		val *= 10;
+		val += str[i] - '0';
 	}
 
 	return val;
