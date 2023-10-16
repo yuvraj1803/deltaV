@@ -9,10 +9,12 @@
 
 #define VM_WAITING 0
 #define VM_RUNNING 1
+#define VM_DEAD	   2
 
 struct vm* vm_init(char* name, uint64_t sp, uint64_t entry, uint64_t base);
 void prepare_vm();
 struct pt_regs* get_vm_pt_regs(struct vm* _vm);
+char* vm_state_to_string(uint8_t state);
 
 struct vm_info{
 	uint32_t quanta_remaining;

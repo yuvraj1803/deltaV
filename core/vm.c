@@ -129,3 +129,17 @@ struct vm* vm_init(char* name, uint64_t sp, uint64_t entry, uint64_t base){
 	return _vm;
 	
 }
+
+char* vm_state_to_string(uint8_t state){
+	switch(state){
+		case 0:
+			return "WAITING";
+		case 1:
+			return "RUNNING";
+		case 2:
+			return "DEAD";
+		default:
+			return "Unidentified State";
+	}
+	return (char*)"Unidentified State";
+}
