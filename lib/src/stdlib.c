@@ -1,4 +1,5 @@
 #include "stdlib.h"
+#include "string.h"
 #include "mm/mm.h"
 
 char* itoa(int num){
@@ -15,7 +16,18 @@ char* itoa(int num){
 	        num_a[digits-i-1] = '0' + num%10;
 	        num/=10;
 	    }
-
+		num_a[digits] = '\0';
 	    return num_a;
 	
+}
+
+int stoi(char* str){
+	int n = strlen(str);
+	int val = 0;
+	for(int i=0;i<n;i++){
+		val += str[i] - '0';
+		val *= 10;
+	}
+
+	return val;
 }
