@@ -4,6 +4,14 @@
     + make
     + qemu-system-aarch64
     + gcc-aarch64-linux-gnu
+ # Debug Dependencies
+    + gdb-multiarch
+ # How to use?
+    + make run
+ # How to Debug?
+    + make debug
+    + (Another Terminal) gdb-multiarch ./deltaV.elf
+    + (gdb) target remote localhost:1234
 
  # EL3 Configuration
    **SCR.RW** - EL2 is in AArch64.
