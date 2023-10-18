@@ -10,6 +10,7 @@
 #include "kstatus.h"
 #include "memory.h"
 #include "mm/paging.h"
+#include "core/irq.h"
 
 #define PSTATE_INTERRUPT_MASK		(0xf << 6)
 #define PSTATE_EL1h					0b0101
@@ -19,6 +20,12 @@ struct vm* vmlist[CONFIG_MAX_VMs];
 int total_vms = 0;
 extern struct vm* current;
 extern void __prepare_vm();
+
+extern void assert_virtual_irq();
+extern void clear_virtual_irq();
+extern void assert_virtual_fiq();
+extern void clear_virtual_fiq();
+
 
 int8_t load_vm(struct vm* _vm, uint64_t sp, uint64_t entry, uint64_t base){
 	// make sure base is page aligned.
@@ -56,8 +63,12 @@ struct pt_regs* get_vm_pt_regs(struct vm* _vm){
 	return (struct pt_regs*)((uint64_t)_vm + PAGE_SIZE - sizeof(struct pt_regs));
 }
 
-void vm_vint_init(struct vm* _vm){
+void vm_assert_virtual_interrupt(struct vm* _vm){
+	if(_vm->cpu.check_irq_pending(_vm)) assert_virtual_irq();
+	else clear_virtual_irq();
 
+	if(_vm->cpu.check_fiq_pending(_vm)) assert_virtual_fiq();
+	else clear_virtual_fiq();
 }
 
 void prepare_vm(){
@@ -69,7 +80,7 @@ void prepare_vm(){
 
 	load_vttbr_el2(current->vmid, (uint64_t)current->virtual_address_space->lv1_table);
 	put_sysregs(&current->cpu.sysregs);
-	vm_vint_init(current);	// initialise virtual interrupts
+	vm_assert_virtual_interrupt(current);	// initialise virtual interrupts
 	
 }
 
