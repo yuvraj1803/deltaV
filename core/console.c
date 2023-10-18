@@ -1,4 +1,5 @@
 #include "core/console.h"
+#include "stdio.h"
 
 void console_push(struct vm_console* console, int val){
     if(console_full(console)) return;
