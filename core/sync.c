@@ -84,6 +84,15 @@ const char *sync_info[] = {
 #define ESR_SRT_SHIFT                         16
 #define ESR_WnR_SHIFT                         6
 
+#define CHECK_MRS(sysreg_name,_op0,_op1,_CRn,_CRm,_op2)	if(op0 == _op0 && op1 == _op1 && CRn == _CRn && CRm == _CRm && op2 == _op2) \
+													regs->regs[rt] = current->cpu.sysregs.sysreg_name;							\
+													regs->pc += 4;																\
+													return;
+													
+#define CHECK_MSR(sysreg_name,_op0,_op1,_CRn,_CRm,_op2)	if(op0 == _op0 && op1 == _op1 && CRn == _CRn && CRm == _CRm && op2 == _op2) \
+													current->cpu.sysregs.sysreg_name = regs->regs[rt];							\
+													regs->pc += 4;																\
+													return;
 extern struct vm* current;
 extern void halt();
 
@@ -104,8 +113,135 @@ void handle_sync_hvc(uint64_t hvc_number){
     // hvc support will be added later
 }
 
-void handle_sync_sysreg_access(){
+static void handle_sync_sysreg_read(uint64_t esr_el2){
+	struct pt_regs* regs = get_vm_pt_regs(current);
 
+	uint8_t op0 = (esr_el2 >> 20) & 0b11;
+	uint8_t op1 = (esr_el2 >> 14) & 0b111;
+	uint8_t op2 = (esr_el2 >> 17) & 0b111;
+	uint8_t CRn = (esr_el2 >> 10) & 0b1111;
+	uint8_t CRm = (esr_el2 >> 1) & 0b1111;
+	uint8_t rt = (esr_el2 >> 5) & 0b11111;
+
+	CHECK_MRS(sctlr_el1,		0b11,0b000,0b0001,0b0000,0b000);
+	CHECK_MRS(ttbr0_el1,		0b11,0b000,0b0010,0b0000,0b000);
+	CHECK_MRS(ttbr1_el1,		0b11,0b000,0b0010,0b0000,0b001);
+	CHECK_MRS(tcr_el1,			0b11,0b000,0b0010,0b0000,0b010);
+	CHECK_MRS(esr_el1,			0b11,0b000,0b0101,0b0010,0b000);
+	CHECK_MRS(far_el1,			0b11,0b000,0b0110,0b0000,0b000);
+	CHECK_MRS(afsr0_el1,		0b11,0b000,0b0101,0b0001,0b000);
+	CHECK_MRS(afsr1_el1,		0b11,0b000,0b0101,0b0001,0b001);
+	CHECK_MRS(mair_el1,			0b11,0b000,0b1010,0b0010,0b000);
+	CHECK_MRS(amair_el1,		0b11,0b000,0b1010,0b0011,0b000);
+	CHECK_MRS(contextidr_el1,	0b11,0b000,0b1101,0b0000,0b001);
+	CHECK_MRS(cpacr_el1,		0b11,0b000,0b0001,0b0000,0b010);
+	CHECK_MRS(elr_el1,			0b11,0b000,0b0100,0b0000,0b001);
+	CHECK_MRS(fpcr,				0b11,0b011,0b0100,0b0100,0b000);
+	CHECK_MRS(fpsr,				0b11,0b011,0b0100,0b0100,0b001);
+	CHECK_MRS(midr_el1,			0b11,0b000,0b0000,0b0000,0b000);
+	CHECK_MRS(mpidr_el1,		0b11,0b000,0b0000,0b0000,0b101);
+	CHECK_MRS(par_el1,			0b11,0b000,0b0111,0b0100,0b000);
+	CHECK_MRS(sp_el0,			0b11,0b000,0b0100,0b0001,0b000);
+	CHECK_MRS(sp_el1,			0b11,0b100,0b0100,0b0001,0b000);
+	CHECK_MRS(spsr_el1,			0b11,0b000,0b0100,0b0000,0b000);
+	CHECK_MRS(tpidr_el0,		0b11,0b011,0b1101,0b0000,0b010);
+	CHECK_MRS(tpidr_el1,		0b11,0b000,0b1101,0b0000,0b100);
+	CHECK_MRS(tpidrro_el0,		0b11,0b011,0b1101,0b0000,0b011);
+	CHECK_MRS(vbar_el1,			0b11,0b000,0b1100,0b0000,0b000);
+	CHECK_MRS(actlr_el1,		0b11,0b000,0b0001,0b0000,0b001);
+	CHECK_MRS(id_pfr0_el1,		0b11,0b000,0b0000,0b0001,0b000);	
+	CHECK_MRS(id_pfr1_el1,		0b11,0b000,0b0000,0b0001,0b001);	
+	CHECK_MRS(id_mmfr0_el1,		0b11,0b000,0b0000,0b0001,0b100);
+	CHECK_MRS(id_mmfr1_el1,		0b11,0b000,0b0000,0b0001,0b101);
+	CHECK_MRS(id_mmfr2_el1,		0b11,0b000,0b0000,0b0001,0b110);
+	CHECK_MRS(id_mmfr3_el1,		0b11,0b000,0b0000,0b0001,0b111);
+	CHECK_MRS(id_isar0_el1,		0b11,0b000,0b0000,0b0010,0b000);
+	CHECK_MRS(id_isar1_el1,		0b11,0b000,0b0000,0b0010,0b001);
+	CHECK_MRS(id_isar2_el1,		0b11,0b000,0b0000,0b0010,0b010);
+	CHECK_MRS(id_isar3_el1,		0b11,0b000,0b0000,0b0010,0b011);
+	CHECK_MRS(id_isar4_el1,		0b11,0b000,0b0000,0b0010,0b100);
+	CHECK_MRS(id_isar5_el1,		0b11,0b000,0b0000,0b0010,0b101);
+	CHECK_MRS(mvfr0_el1,		0b11,0b000,0b0000,0b0011,0b000);
+	CHECK_MRS(mvfr1_el1,		0b11,0b000,0b0000,0b0011,0b001);
+	CHECK_MRS(mvfr2_el1,		0b11,0b000,0b0000,0b0011,0b010);
+	CHECK_MRS(id_aa64pfr0_el1,	0b11,0b000,0b0000,0b0100,0b000);
+	CHECK_MRS(id_aa64pfr1_el1,	0b11,0b000,0b0000,0b0100,0b001);
+	CHECK_MRS(id_aa64dfr0_el1,	0b11,0b000,0b0000,0b0101,0b000);
+	CHECK_MRS(id_aa64dfr1_el1,	0b11,0b000,0b0000,0b0101,0b001);
+	CHECK_MRS(id_aa64isar0_el1,	0b11,0b000,0b0000,0b0110,0b000);
+	CHECK_MRS(id_aa64isar1_el1,	0b11,0b000,0b0000,0b0110,0b001);
+	CHECK_MRS(id_aa64mmfr0_el1,	0b11,0b000,0b0000,0b0111,0b000);
+	CHECK_MRS(id_aa64mmfr1_el1,	0b11,0b000,0b0000,0b0111,0b001);
+	CHECK_MRS(id_aa64afr0_el1,	0b11,0b000,0b0000,0b0101,0b100);
+	CHECK_MRS(id_aa64afr1_el1,	0b11,0b000,0b0000,0b0101,0b101);
+	CHECK_MRS(ctr_el0,			0b11,0b011,0b0000,0b0000,0b001);
+	CHECK_MRS(ccsidr_el1,		0b11,0b001,0b0000,0b0000,0b000);
+	CHECK_MRS(clidr_el1,		0b11,0b001,0b0000,0b0000,0b001);
+	CHECK_MRS(csselr_el1,		0b11,0b010,0b0000,0b0000,0b000);
+	CHECK_MRS(aidr_el1,			0b11,0b001,0b0000,0b0000,0b111);
+	CHECK_MRS(revidr_el1,		0b11,0b000,0b0000,0b0000,0b110);
+	CHECK_MRS(cntkctl_el1,		0b11,0b000,0b1110,0b0001,0b000);
+	CHECK_MRS(cntp_ctl_el0,		0b11,0b011,0b1110,0b0010,0b001);
+	CHECK_MRS(cntp_cval_el0,	0b11,0b011,0b1110,0b0010,0b010);
+	CHECK_MRS(cntp_tval_el0,	0b11,0b011,0b1110,0b0010,0b000);
+	CHECK_MRS(cntv_ctl_el0,		0b11,0b011,0b1110,0b0011,0b001);
+	CHECK_MRS(cntv_cval_el0,	0b11,0b011,0b1110,0b0011,0b010);
+	CHECK_MRS(cntv_tval_el0,	0b11,0b011,0b1110,0b0011,0b000);
+	
+}
+
+static void handle_sync_sysreg_write(uint64_t esr_el2){
+
+	struct pt_regs* regs = get_vm_pt_regs(current);
+
+	uint8_t op0 = (esr_el2 >> 20) & 0b11;
+	uint8_t op1 = (esr_el2 >> 14) & 0b111;
+	uint8_t op2 = (esr_el2 >> 17) & 0b111;
+	uint8_t CRn = (esr_el2 >> 10) & 0b1111;
+	uint8_t CRm = (esr_el2 >> 1) & 0b1111;
+	uint8_t rt = (esr_el2 >> 5) & 0b11111;
+
+	CHECK_MSR(sctlr_el1,		0b11,0b000,0b0001,0b0000,0b000);
+	CHECK_MSR(ttbr0_el1,		0b11,0b000,0b0010,0b0000,0b000);
+	CHECK_MSR(ttbr1_el1,		0b11,0b000,0b0010,0b0000,0b001);
+	CHECK_MSR(tcr_el1,			0b11,0b000,0b0010,0b0000,0b010);
+	CHECK_MSR(esr_el1,			0b11,0b000,0b0101,0b0010,0b000);
+	CHECK_MSR(far_el1,			0b11,0b000,0b0110,0b0000,0b000);
+	CHECK_MSR(afsr0_el1,		0b11,0b000,0b0101,0b0001,0b000);
+	CHECK_MSR(afsr1_el1,		0b11,0b000,0b0101,0b0001,0b001);
+	CHECK_MSR(mair_el1,			0b11,0b000,0b1010,0b0010,0b000);
+	CHECK_MSR(amair_el1,		0b11,0b000,0b1010,0b0011,0b000);
+	CHECK_MSR(contextidr_el1,	0b11,0b000,0b1101,0b0000,0b001);
+	CHECK_MSR(cpacr_el1,		0b11,0b000,0b0001,0b0000,0b010);
+	CHECK_MSR(elr_el1,			0b11,0b000,0b0100,0b0000,0b001);
+	CHECK_MSR(fpcr,				0b11,0b011,0b0100,0b0100,0b000);
+	CHECK_MSR(fpsr,				0b11,0b011,0b0100,0b0100,0b001);
+	CHECK_MSR(midr_el1,			0b11,0b000,0b0000,0b0000,0b000);
+	CHECK_MSR(mpidr_el1,		0b11,0b000,0b0000,0b0000,0b101);
+	CHECK_MSR(par_el1,			0b11,0b000,0b0111,0b0100,0b000);
+	CHECK_MSR(sp_el0,			0b11,0b000,0b0100,0b0001,0b000);
+	CHECK_MSR(sp_el1,			0b11,0b100,0b0100,0b0001,0b000);
+	CHECK_MSR(spsr_el1,			0b11,0b000,0b0100,0b0000,0b000);
+	CHECK_MSR(tpidr_el0,		0b11,0b011,0b1101,0b0000,0b010);
+	CHECK_MSR(tpidr_el1,		0b11,0b000,0b1101,0b0000,0b100);
+	CHECK_MSR(tpidrro_el0,		0b11,0b011,0b1101,0b0000,0b011);
+	CHECK_MSR(vbar_el1,			0b11,0b000,0b1100,0b0000,0b000);
+	CHECK_MSR(actlr_el1,		0b11,0b000,0b0001,0b0000,0b001);
+	CHECK_MSR(csselr_el1,		0b11,0b010,0b0000,0b0000,0b000);
+	CHECK_MSR(cntkctl_el1,		0b11,0b000,0b1110,0b0001,0b000);
+	CHECK_MSR(cntp_ctl_el0,		0b11,0b011,0b1110,0b0010,0b001);
+	CHECK_MSR(cntp_cval_el0,	0b11,0b011,0b1110,0b0010,0b010);
+	CHECK_MSR(cntp_tval_el0,	0b11,0b011,0b1110,0b0010,0b000);
+	CHECK_MSR(cntv_ctl_el0,		0b11,0b011,0b1110,0b0011,0b001);
+	CHECK_MSR(cntv_cval_el0,	0b11,0b011,0b1110,0b0011,0b010);
+	CHECK_MSR(cntv_tval_el0,	0b11,0b011,0b1110,0b0011,0b000);
+}
+
+void handle_sync_sysreg_access(uint64_t esr_el2){
+
+	int dir = (esr_el2 & 1);
+
+	dir == 1 ? handle_sync_sysreg_read(esr_el2) : handle_sync_sysreg_write(esr_el2);
 }
 
 
@@ -161,7 +297,7 @@ void handle_sync(uint64_t esr_el2, uint64_t elr_el2, uint64_t far_el2, uint64_t 
             break;
         
         case ESR_EC_SYSREG_ACCESS:
-            handle_sync_sysreg_access();
+            handle_sync_sysreg_access(esr_el2);
             break;
         
         case ESR_EC_DATA_ABORT:
