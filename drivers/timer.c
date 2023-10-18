@@ -28,7 +28,9 @@ void system_timer_1_handler(){
 }
 
 void system_timer_3_handler(){
-	
+	mm_w32(TIMER_CS, TIMER_CS_M3); 	// this timer acts as a virtual timer.
+									// all 4 timers of a VM are virtualised into a single timer.
+									// check vcpu_enter() for its implementation.
 }
 
 uint64_t get_phys_time(){
