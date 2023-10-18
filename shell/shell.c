@@ -94,7 +94,25 @@ void list(){
 }
 
 void enter(){
- 
+    char vmid_str[3];
+    printf("Enter VMID: ");
+    gets(vmid_str);
+
+    uint8_t vmid = stoi(vmid_str);
+
+    if(vmid < 0 || vmid >= total_vms){
+        printf("Invalid VMID entered.\n");
+        return;
+    }
+
+    printf("Inside VM %d", vmid);
+    printf("\n");
+    printf("\n");
+    printf("\n");
+    
+    vm_connected_to_uart = vmid;
+    console_print(&vmlist[vmid]->output_console);
+
 }
 
 void help(){
