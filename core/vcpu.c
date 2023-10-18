@@ -355,6 +355,39 @@ void vcpu_enter(){
     uint64_t current_time = get_phys_time();
     uint64_t time_inactive = current_time - current->cpu.system_timer_regs.last_recorded_physical_timer_count;
     current->cpu.system_timer_regs.time_not_active += time_inactive;
+    
+    uint64_t current_virtual_time = get_virt_time(current);
+    uint32_t min_cx = 0xffffffff;
+    uint32_t timers_matched = 0;
+
+    if(current->cpu.system_timer_regs.c0 > current_virtual_time && min_cx > current->cpu.system_timer_regs.c0 - current_virtual_time){
+        min_cx = current->cpu.system_timer_regs.c0 - current_virtual_time;
+        timers_matched |= TIMER_CS_M0;
+    }
+    if(current->cpu.system_timer_regs.c1 > current_virtual_time && min_cx > current->cpu.system_timer_regs.c1 - current_virtual_time){
+        min_cx = current->cpu.system_timer_regs.c1 - current_virtual_time;
+        timers_matched |= TIMER_CS_M1;
+    }
+    if(current->cpu.system_timer_regs.c2 > current_virtual_time && min_cx > current->cpu.system_timer_regs.c2 - current_virtual_time){
+        min_cx = current->cpu.system_timer_regs.c2 - current_virtual_time;
+        timers_matched |= TIMER_CS_M2;
+    }
+    if(current->cpu.system_timer_regs.c3 > current_virtual_time && min_cx > current->cpu.system_timer_regs.c3 - current_virtual_time){
+        min_cx = current->cpu.system_timer_regs.c3 - current_virtual_time;
+        timers_matched |= TIMER_CS_M3;
+    }
+
+    // So what is happening here is, we look at the VM's C0,C1,C2 and C3.
+    // Which ever is going to happen immediately next, we store that time in min_cx
+    // we configure physical timer C3 for that amount of time.
+    // when that occurs, the interrupt will be handled.
+
+    if(min_cx != 0xffffffff) mm_w32(TIMER_C3, TIMER_CLO + min_cx);
+
+
+    // in this line we check which timers are enabled in the first place and only update TIMER CS for them.
+    current->cpu.system_timer_regs.cs |= (~current->cpu.system_timer_regs.cs & timers_matched); 
+
 }
 
 uint8_t check_irq_pending(struct vm* _vm){
