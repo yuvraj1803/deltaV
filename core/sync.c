@@ -84,15 +84,17 @@ const char *sync_info[] = {
 #define ESR_SRT_SHIFT                         16
 #define ESR_WnR_SHIFT                         6
 
-#define CHECK_MRS(sysreg_name,_op0,_op1,_CRn,_CRm,_op2)	if(op0 == _op0 && op1 == _op1 && CRn == _CRn && CRm == _CRm && op2 == _op2) \
-													regs->regs[rt] = current->cpu.sysregs.sysreg_name;							\
-													regs->pc += 4;																\
-													return;
+#define CHECK_MRS(sysreg_name,_op0,_op1,_CRn,_CRm,_op2)	if(op0 == _op0 && op1 == _op1 && CRn == _CRn && CRm == _CRm && op2 == _op2) { 	\
+													regs->regs[rt] = current->cpu.sysregs.sysreg_name;									\
+													regs->pc += 4;																		\
+													return;																				\
+													}
 													
-#define CHECK_MSR(sysreg_name,_op0,_op1,_CRn,_CRm,_op2)	if(op0 == _op0 && op1 == _op1 && CRn == _CRn && CRm == _CRm && op2 == _op2) \
-													current->cpu.sysregs.sysreg_name = regs->regs[rt];							\
-													regs->pc += 4;																\
-													return;
+#define CHECK_MSR(sysreg_name,_op0,_op1,_CRn,_CRm,_op2)	if(op0 == _op0 && op1 == _op1 && CRn == _CRn && CRm == _CRm && op2 == _op2){ 	\
+													current->cpu.sysregs.sysreg_name = regs->regs[rt];									\
+													regs->pc += 4;																		\
+													return;																				\
+													}																	
 extern struct vm* current;
 extern void halt();
 
