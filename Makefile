@@ -115,6 +115,7 @@ objdump: kernel8.img
 
 .PHONY: clean
 clean:
+	cd ./guests/deltaOS && make clean
 	rm -f *.elf
 	rm -f *.img
 	find ./build -name '*.o' -delete 
