@@ -13,6 +13,7 @@
 #include "stdio.h"
 #include "shell/shell.h"
 #include "core/console.h"
+#include "debug/debug.h"
 
 #define MMIO_IRQ_BEGIN      IRQ_BASIC_PENDING
 #define MMIO_IRQ_END        DISABLE_IRQs_2
@@ -186,16 +187,16 @@ uint64_t read_gpio(struct vm* _vm, uint64_t addr){
 uint64_t read_mmio(struct vm* _vm, uint64_t addr){
     
     if(addr >= MMIO_IRQ_BEGIN && addr <= MMIO_IRQ_END){
-        // printf("IRQ read at: %x\n", addr);
+        debug("IRQ read at: %x\n", addr);
         return _vm->cpu.read_intctl(_vm,addr);
     }else if(addr >= MMIO_AUX_BEGIN && addr <= MMIO_AUX_END){
-        // printf("AUX read at: %x\n", addr);
+        debug("AUX read at: %x\n", addr);
         return _vm->cpu.read_aux(_vm,addr);
     }else if(addr >= MMIO_GPIO_BEGIN && addr <= MMIO_IRQ_END){
-        // printf("GPIO read at: %x\n", addr);
+        debug("GPIO read at: %x\n", addr);
         return _vm->cpu.read_gpio(_vm,addr);
     }else if(addr >= MMIO_TIMER_BEGIN && addr <= MMIO_TIMER_END){
-        // printf("TIMER read at: %x\n", addr);
+        debug("TIMER read at: %x\n", addr);
         return _vm->cpu.read_systimer(_vm,addr);
     }
 

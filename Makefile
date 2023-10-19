@@ -38,6 +38,7 @@ OBJ += ./build/lib/stdlib.o
 OBJ += ./build/fs/ff.o
 OBJ += ./build/fs/diskio.o
 OBJ += ./build/shell/shell.o
+OBJ += ./build/debug/debug.o
 
 .PHONY: all
 all: deltaOS sdcard kernel8.img
@@ -66,6 +67,9 @@ all: deltaOS sdcard kernel8.img
 ./build/lib/%.o: ./lib/src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 ./build/shell/%.o : ./shell/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+./build/debug/%.o : ./debug/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 kernel8.img : $(OBJ)

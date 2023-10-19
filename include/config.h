@@ -16,7 +16,7 @@
 #define CONFIG_SCHED_QUANTA				100 // in milliseconds
 
 
-
+#define DEBUG
 
 // EL3
 #define EL3_SCR 	/*RW*/	       (1U << 10) |   /*HCE*/        (1U << 8)   |   /*NS*/         (1U << 0)
