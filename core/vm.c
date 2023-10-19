@@ -1,3 +1,10 @@
+/*
+ *
+ * Copyright (c) 2023 Yuvraj Sakshith <ysakshith@gmail.com>
+ *
+ */
+
+
 #include "core/vm.h"
 #include <stdint.h>
 #include "mm/mm.h"

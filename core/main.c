@@ -1,3 +1,10 @@
+/*
+ *
+ * Copyright (c) 2023 Yuvraj Sakshith <ysakshith@gmail.com>
+ *
+ */
+
+
 #include "stdio.h"
 #include "drivers/uart.h"
 #include "drivers/sd.h"
