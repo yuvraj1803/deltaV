@@ -40,7 +40,7 @@ OBJ += ./build/fs/diskio.o
 OBJ += ./build/shell/shell.o
 
 .PHONY: all
-all: sdcard kernel8.img
+all: deltaOS sdcard kernel8.img
 
 ./build/core/%.o: ./core/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -72,6 +72,11 @@ kernel8.img : $(OBJ)
 	$(LD) -T linker.ld -o ./deltaV.elf $(OBJ_C) $(OBJ)
 	$(OBJCOPY) ./deltaV.elf -O binary ./kernel8.img
 
+
+.PHONY: deltaOS
+deltaOS:
+	cd ./guests/deltaOS && make clean
+	cd ./guests/deltaOS && make
 
 .PHONY: run
 run: 	sdcard kernel8.img qemu
