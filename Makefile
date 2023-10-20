@@ -76,11 +76,10 @@ kernel8.img : $(OBJ)
 	$(LD) -T linker.ld -o ./deltaV.elf $(OBJ_C) $(OBJ)
 	$(OBJCOPY) ./deltaV.elf -O binary ./kernel8.img
 
-
 .PHONY: deltaOS
 deltaOS:
-	cd ./guests/deltaOS && make clean
-	cd ./guests/deltaOS && make
+	cd ./guests/deltaOS/ && make clean
+	cd ./guests/deltaOS/ && make
 
 .PHONY: run
 run: 	sdcard kernel8.img qemu
@@ -94,7 +93,7 @@ qemu:
 	qemu-system-aarch64 -M raspi3b -nographic -serial null -serial mon:stdio -m 1024 -kernel ./kernel8.img -drive file=./sdcard.img,if=sd,format=raw
 
 .PHONY: sdcard
-sdcard: deltaOS
+sdcard:	deltaOS
 	sudo modprobe nbd max_part=8
 	qemu-img create sdcard.img 128m
 	sudo qemu-nbd -c /dev/nbd0 --format=raw sdcard.img 
