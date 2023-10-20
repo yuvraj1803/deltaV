@@ -14,6 +14,7 @@
 #include "core/vm.h"
 #include "stdio.h"
 #include "kstatus.h"
+#include "debug/debug.h"
 
 
 const char *sync_info[] = {
@@ -294,22 +295,27 @@ void handle_sync(uint64_t esr_el2, uint64_t elr_el2, uint64_t far_el2, uint64_t 
     switch(EC){
 
         case ESR_EC_WFx_INSTRUCTION:
+			debug("wfx trapped.\n");
             handle_sync_wfx();
             break;
 
         case ESR_EC_FLOATING_POINT_ACCESS:
+			debug("floating point access trapped.\n");
             handle_sync_floating_point_access();
             break;
 
         case ESR_EC_HVC_INSTRUCTION:
+			debug("HVC: %x\n", hvc_number);
             handle_sync_hvc(hvc_number);
             break;
         
         case ESR_EC_SYSREG_ACCESS:
+			debug("Sysreg access. ESR_EL2: %x\n", esr_el2);
             handle_sync_sysreg_access(esr_el2);
             break;
         
         case ESR_EC_DATA_ABORT:
+			debug("Data abort. ESR: %x FAR: %x\n", esr_el2, far_el2);
             int8_t data_abort_handler_status = handle_sync_data_abort(esr_el2, far_el2);
             if(data_abort_handler_status  < 0){
                 printf("Data abort could not be handled. ESR: %x FAR: %x\n");
@@ -318,7 +324,7 @@ void handle_sync(uint64_t esr_el2, uint64_t elr_el2, uint64_t far_el2, uint64_t 
             break;
 
         default:
-            printf("LOG: Unsupported sync exception occurred => INFO: %s ESR: %x ELR: %x FAR: %x\n", sync_info[EC], esr_el2, elr_el2, far_el2);
+            debug("LOG: Unsupported sync exception occurred => INFO: %s ESR: %x ELR: %x FAR: %x\n", sync_info[EC], esr_el2, elr_el2, far_el2);
             halt();
             break;
     }
