@@ -134,14 +134,14 @@ struct vm* vm_init(char* name, uint64_t sp, uint64_t entry, uint64_t base){
 	_vm->info.prio = CONFIG_SCHED_QUANTA; // all vms have the same priority
 	_vm->info.quanta_remaining = CONFIG_SCHED_QUANTA;
 
-	vmlist[total_vms++] = _vm;
-
 	if(load_vm(_vm, sp, entry, base) < 0){
 		printf("LOG: Failed to load %s.\n", _vm->name);
 		free(_vm);
 		return 0;
 
 	}
+
+	vmlist[total_vms++] = _vm;
 
 	printf("LOG: %s loaded.\n", _vm->name);
 	return _vm;
