@@ -143,7 +143,7 @@ struct vm* vm_init(char* name, uint64_t sp, uint64_t entry, uint64_t base){
 
 	vmlist[total_vms++] = _vm;
 
-	printf("LOG: %s loaded.\n", _vm->name);
+	printf("LOG: [VMID: %d] %s loaded.\n",_vm->vmid, _vm->name);
 	return _vm;
 	
 }
