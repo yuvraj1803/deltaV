@@ -34,7 +34,7 @@ void main(void){
 	sched_init();
 	shell_init();
 
-	vm_init("/guests/deltaOS.bin", 0x0,0x80000,0x80000);
+	vm_init("/guests/deltaOS/kernel8.img", 0x0,0x80000,0x80000);
 	
 	while(1){
 		__disable_irq();

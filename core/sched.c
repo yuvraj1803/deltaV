@@ -32,7 +32,7 @@ void sched_init(){
 	shell_vm->state = VM_RUNNING; // shell is initially running.
 	shell_vm->vmid = VMID_SHELL;
 	shell_vm->cpu.context.pc = (uint64_t) shell_run;
-	shell_vm->cpu.context.sp = get_vm_pt_regs(shell_vm);
+	shell_vm->cpu.context.sp = (uint64_t) get_vm_pt_regs(shell_vm);
 	total_vms++;
 	vmlist[VMID_SHELL] = shell_vm;
 	current = vmlist[VMID_SHELL];
