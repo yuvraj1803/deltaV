@@ -356,7 +356,7 @@ void vcpu_exit(){
 }
 
 void vcpu_enter(){
-    vmlist[VMID_SHELL] = VM_WAITING;
+    vmlist[VMID_SHELL]->state = VM_WAITING;
     current->state = VM_RUNNING;
 
     // once vm is back alive, update for how long it was dead.
