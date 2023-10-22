@@ -16,6 +16,7 @@
 #include "mm/mm.h"
 #include "shell/shell.h"
 #include "mm/paging.h"
+#include "debug/debug.h"
 
 extern struct vm* vmlist[CONFIG_MAX_VMs];
 extern int total_vms;
@@ -95,6 +96,8 @@ void schedule(){
 	// update vm states.
 	prev->state = VM_WAITING;
 	current->state = VM_RUNNING;
+
+	debug("Context switch: %s  -->  %s\n", prev->name, current->name);
 
 	switch_context(&prev->cpu.context, &current->cpu.context);
 }
