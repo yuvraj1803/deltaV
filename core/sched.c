@@ -47,9 +47,7 @@ void sched_init(){
 void scheduler_tick(){
 	
 	current->info.quanta_remaining--;
-
-	printf("%d\n", current->info.quanta_remaining);
-
+	
 	if(current->info.quanta_remaining <= 0){
 		current->info.quanta_remaining = 0;
 		schedule();
