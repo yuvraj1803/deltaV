@@ -78,7 +78,6 @@ __prepare_vm:
 	hypervisor_entry
 	bl handle_irq
 	hypervisor_exit
-	eret
 .endm
 
 .macro handle_sync_interrupt
@@ -89,7 +88,6 @@ __prepare_vm:
 	mov x3, x8 	// hvc number
 	bl handle_sync
 	hypervisor_exit
-	eret
 .endm
 
 .macro ventry handler
