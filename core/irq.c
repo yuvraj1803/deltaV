@@ -59,7 +59,7 @@ void log_unsupported_exception(uint64_t exception_type,
 			       uint64_t elr_el2,
 			       uint64_t far_el2){
 
-	printf("[UNCAUGHT EXCEPTION] : %s [ESR] : %x [ELR] : %x [FAR] : %x [EL] : %d\n", exception_info[exception_type], esr_el2, elr_el2, far_el2, get_current_el());
+	printf("[UNCAUGHT EXCEPTION] : %s [ESR] : %x [ELR] : %x [FAR] : %x [EL] : %d\n", exception_info[exception_type], esr_el2, elr_el2, far_el2, exception_type > 7 ? get_current_el() -1 : get_current_el());
 }
 
 
