@@ -5,8 +5,8 @@
  */
 
 
-#ifndef __IRQ_H__
-#define __IRQ_H__ 
+#ifndef __EXCEPTIONS_H__
+#define __EXCEPTIONS_H__ 
 
 #define  CURRENT_EL_SP0_SYNC    0x0
 #define  CURRENT_EL_SP0_IRQ     0x1
