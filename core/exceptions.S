@@ -85,7 +85,8 @@ __prepare_vm:
 	mrs x0, esr_el2
 	mrs x1, elr_el2
 	mrs x2, far_el2
-	mov x3, x8 	// hvc number
+	mov x3, x0
+	and x3, x3, 0xffff 	// hvc number = ESR_EL2[15:0]
 	bl handle_sync
 	hypervisor_exit
 .endm
