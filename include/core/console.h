@@ -22,6 +22,6 @@ int console_pop(struct vm_console*);
 int console_empty(struct vm_console*);
 void console_clear(struct vm_console*);
 int console_full(struct vm_console* console);
-void console_print(struct vm_console* console);
+void console_flush(struct vm_console* console);
 
 #endif

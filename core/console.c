@@ -7,6 +7,7 @@
 
 #include "core/console.h"
 #include "stdio.h"
+#include "drivers/uart.h"
 
 void console_push(struct vm_console* console, int val){
     if(console_full(console)) return;
@@ -40,10 +41,12 @@ void console_clear(struct vm_console* console){
     console->used = 0;
 }
 
-void console_print(struct vm_console* console){
-    int ptr = console->begin;
-    while(console->buffer[ptr] && ptr != console->end){
-        printf("%c", console->buffer[ptr]);
-        ptr = (ptr + 1)%CONFIG_VM_CONSOLE_BUFFER_SIZE;
+void console_flush(struct vm_console* console){
+    int val = console_pop(console);
+
+    while(val != -1){
+        val = val & 0xff;
+        uart_tx(val);
+        val = console_pop(console);
     }
 }
