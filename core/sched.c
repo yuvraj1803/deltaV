@@ -74,7 +74,7 @@ void schedule(){
 	int nextvm = -1;
 
 	for(int i=0;i<total_vms;i++){
-		if(vmlist[i]->state == VM_WAITING && vmlist[i]->info.quanta_remaining > max_quanta){
+		if(vmlist[i] != 0 && vmlist[i]->info.quanta_remaining > max_quanta){
 			max_quanta = vmlist[i]->info.quanta_remaining;
 			nextvm = i;
 		}
@@ -93,9 +93,9 @@ void schedule(){
 		return;
 	}
 	
-	// update vm states.
-	prev->state = VM_WAITING;
-	current->state = VM_RUNNING;
+	// // update vm states.
+	// prev->state = VM_WAITING;
+	// current->state = VM_RUNNING;
 
 	debug("Context switch: %s  -->  %s\n", prev->name, current->name);
 

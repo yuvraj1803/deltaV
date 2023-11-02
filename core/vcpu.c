@@ -349,8 +349,8 @@ void write_mmio(struct vm* _vm, uint64_t addr,uint64_t val){
 }
 
 void vcpu_exit(){
-    current->state = VM_WAITING;
-    vmlist[VMID_SHELL]->state = VM_RUNNING;
+    // current->state = VM_WAITING;
+    // vmlist[VMID_SHELL]->state = VM_RUNNING;
 
     if(current->vmid == vm_connected_to_uart){
         console_flush(&current->output_console);
@@ -361,8 +361,8 @@ void vcpu_exit(){
 }
 
 void vcpu_enter(){
-    vmlist[VMID_SHELL]->state = VM_WAITING;
-    current->state = VM_RUNNING;
+    // vmlist[VMID_SHELL]->state = VM_WAITING;
+    // current->state = VM_RUNNING;
 
     if(current->vmid == vm_connected_to_uart){
         console_flush(&current->output_console);

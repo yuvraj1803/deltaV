@@ -109,7 +109,7 @@ struct vm* vm_init(char* name, uint64_t sp, uint64_t entry, uint64_t base){
 
 	_vm->vmid = total_vms;
 
-	_vm->state = VM_WAITING; // initially vm is in waiting state. until scheduled.
+	_vm->state = VM_RUNNING; // initially vm is in waiting state. until scheduled.
 
 	_vm->cpu.context.pc = (uint64_t) __prepare_vm;
 	_vm->cpu.context.sp = (uint64_t) get_vm_pt_regs(_vm);
