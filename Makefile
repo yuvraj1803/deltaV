@@ -39,6 +39,7 @@ OBJ += ./build/fs/ff.o
 OBJ += ./build/fs/diskio.o
 OBJ += ./build/shell/shell.o
 OBJ += ./build/debug/debug.o
+OBJ += ./build/sse/sse.o
 
 .PHONY: all
 all: sdcard kernel8.img
@@ -71,6 +72,10 @@ all: sdcard kernel8.img
 
 ./build/debug/%.o : ./debug/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
+
+./build/sse/%.o : ./sse/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
 
 kernel8.img : $(OBJ)
 	$(LD) -T linker.ld -o ./deltaV.elf $(OBJ_C) $(OBJ)
