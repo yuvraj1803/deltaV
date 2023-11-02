@@ -10,9 +10,11 @@
 #include "stdio.h"
 #include "shell/shell.h"
 #include <stdint.h>
+#include "core/vm.h"
+#include "core/console.h"
 
 uint8_t vm_connected_to_uart = VMID_SHELL;	// initially only hypervisor shell is connected to physical UART.	
-
+extern struct vm* vmlist[CONFIG_MAX_VMs];
 void uart_init(){
 	
 	mm_w(AUX_ENABLES, mm_r(AUX_ENABLES) | 0x1);
@@ -93,4 +95,28 @@ void uart_write_hex(unsigned long long x){
 
 void uart_handler(){
 	if(vm_connected_to_uart == VMID_SHELL) shell_run();
+	else{
+		char input = mm_r32(AUX_MU_IO_REG) & 0xff;
+		static int escape_char_pressed = 0;
+		if(input == '!'){
+			escape_char_pressed = 1;
+		}else{
+			
+			if(escape_char_pressed){
+				if(input == '1'){
+					vm_connected_to_uart = VMID_SHELL;
+				}
+
+				escape_char_pressed = 0;
+			}else{
+				if(vmlist[vm_connected_to_uart]->state == VM_RUNNING){
+						console_push(&vmlist[vm_connected_to_uart]->input_console, input);
+				}
+			}
+
+
+		}
+
+
+	}
 }

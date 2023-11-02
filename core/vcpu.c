@@ -40,7 +40,7 @@ static uint64_t read_aux_mu(struct vm* _vm, uint64_t addr){
             if(_vm->cpu.aux_regs.aux_mu_lcr_reg & AUX_MU_LCR_DLAB){
                 return _vm->cpu.aux_regs.aux_mu_baud_reg & 0xff;
             }else{
-                return console_pop(&_vm->output_console);
+                return console_pop(&_vm->input_console);
             }
         case AUX_MU_IER_REG:
             if(_vm->cpu.aux_regs.aux_mu_lcr_reg & AUX_MU_LCR_DLAB){

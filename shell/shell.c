@@ -58,7 +58,7 @@ static void add_shell_command(char command[], void (*command_handler)){
 
 void shell_run(){
     if(!SHELL_ACTIVE_BEFORE){
-        printf(">>> ");
+        printf("deltaV >>> ");
         SHELL_ACTIVE_BEFORE = 1;
     }
     char shell_input[CONFIG_MAX_SHELL_COMMAND_SIZE];
@@ -74,7 +74,7 @@ void shell_run(){
     }
 
     if(!command_recognised) printf("command not recognised.\n");
-    printf(">>> ");
+    if(vm_connected_to_uart == VMID_SHELL) printf("deltaV >>> ");
 }
 
 void shell_init(){
@@ -112,13 +112,19 @@ void enter(){
         return;
     }
 
-    printf("Inside VM %d", vmid);
-    printf("\n");
+    printf("Inside VM %d\n", vmid);
+    printf("Press !1 to exit.\n");
     printf("\n");
     printf("\n");
     
     vm_connected_to_uart = vmid;
-    console_print(&vmlist[vmid]->output_console);
+    console_flush(&vmlist[vm_connected_to_uart]->output_console);
+
+    if(vmlist[vm_connected_to_uart]->state == VM_RUNNING){
+        console_flush(&vmlist[vm_connected_to_uart]->output_console);
+    }
+
+    return;
 
 }
 
