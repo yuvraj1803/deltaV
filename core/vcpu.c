@@ -29,6 +29,7 @@
 
 extern struct vm* vmlist[CONFIG_MAX_VMs];
 extern struct vm* current;
+extern uint8_t vm_connected_to_uart;
 
 static uint64_t read_aux_mu(struct vm* _vm, uint64_t addr){
     if((addr >= AUX_MU_IO_REG && addr <= AUX_MU_BAUD_REG) && ((_vm->cpu.aux_regs.aux_enables & 1) == 0)) return 0;  // Invalid AUX MU address being read or AUX MU not enabled.
@@ -351,6 +352,10 @@ void vcpu_exit(){
     current->state = VM_WAITING;
     vmlist[VMID_SHELL]->state = VM_RUNNING;
 
+    if(current->vmid == vm_connected_to_uart){
+        console_flush(&current->output_console);
+    }
+
     // save when vm was last active physically.
     current->cpu.system_timer_regs.last_recorded_physical_timer_count = get_phys_time(); 
 }
@@ -358,6 +363,10 @@ void vcpu_exit(){
 void vcpu_enter(){
     vmlist[VMID_SHELL]->state = VM_WAITING;
     current->state = VM_RUNNING;
+
+    if(current->vmid == vm_connected_to_uart){
+        console_flush(&current->output_console);
+    }
 
     // once vm is back alive, update for how long it was dead.
     uint64_t current_time = get_phys_time();
