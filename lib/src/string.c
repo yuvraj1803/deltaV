@@ -17,7 +17,7 @@ uint32_t strlen(const char* str){
     return strpos;
 }
 
-void strcat(char* s1, char*s2){
+char* strcat(char* s1, char*s2){
     int l1 = strlen(s1);
     int l2 = strlen(s2);
 
@@ -25,6 +25,8 @@ void strcat(char* s1, char*s2){
         s1[l1] = s2[i];
         l1++;
     }
+
+    return s1;
 }
 
 // copies string from src to tgt
