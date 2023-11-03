@@ -85,7 +85,7 @@ void shell_init(){
     add_shell_command("enter", enter);
     add_shell_command("help", help);
 
-    log("Shell initialised\n");
+    log("Shell initialised");
 }
 
 // ===================================== Shell Commands =================================================
