@@ -1,9 +1,12 @@
 #include "sse/sse.h"
 #include "core/vm.h"
 #include "mm/paging.h"
+#include "mm/mm.h"
 #include "fs/ff.h"
 #include "config.h"
 #include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
 #include "memory.h"
 
 /*
@@ -26,7 +29,24 @@ extern int total_vms;
 
 FIL* sse_files[CONFIG_MAX_SSE_FILES];
 
+static char* make_sse_vm_dir_name(uint8_t vmid){
+    char* name = (char*) malloc(6); // 6 because VMID is <= 255. So VM_255 is the largest string.
+    // All this drama is unnecessary. Even though I am asking for 6 bytes, malloc will return an entire page ;). (4096bytes).
 
+    strcpy(name, "VM_");
+    strcat(name, itoa(vmid));
+
+    return name;
+}
+
+static int sse_sandbox_init(struct vm* vm){
+
+    f_chdir("/");
+    f_mkdir(make_sse_vm_dir_name(vm->vmid));    // this will create a directory with VM_{VMID}.
+                                                // example: 'VM_1' for VM with id '1'.
+
+    return 0;
+}
 
 void sse_init(){
 
