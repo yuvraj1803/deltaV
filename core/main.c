@@ -33,6 +33,7 @@ void main(void){
 	timer_init();
 	sched_init();
 	shell_init();
+	sse_init();
 
 	vm_init("/guests/deltaOS/kernel8.img", 0x0,0x80000,0x80000);
 	
