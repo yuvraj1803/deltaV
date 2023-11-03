@@ -17,6 +17,16 @@ uint32_t strlen(const char* str){
     return strpos;
 }
 
+void strcat(char* s1, char*s2){
+    int l1 = strlen(s1);
+    int l2 = strlen(s2);
+
+    for(int i=0;i<l2;i++){
+        s1[l1] = s2[i];
+        l1++;
+    }
+}
+
 // copies string from src to tgt
 char* strcpy(char* tgt, const char* src){
     uint32_t tgt_ix = 0;
