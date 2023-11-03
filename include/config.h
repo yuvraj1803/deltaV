@@ -14,6 +14,7 @@
 #define CONFIG_MAX_SHELL_COMMANDS       32
 #define CONFIG_MAX_VMs					256
 #define CONFIG_SCHED_QUANTA				100 // in milliseconds
+#define CONFIG_MAX_SSE_FILES            1024
 
 
 // #define DEBUG
