@@ -72,69 +72,37 @@ void sse_hvc_main_handler(uint16_t hvc_number){
     uint64_t x0 = vm_regs->regs[0];
     uint64_t x1 = vm_regs->regs[1];
     uint64_t x2 = vm_regs->regs[2];
-    uint64_t x3 = vm_regs->regs[3];
-
 
     // temporary variables used inside switch statement.    
     int return_val = -1;
     char* filename_virt;
     char* filename_phys;
-    char* mode_virt;
-    char* mode_phys;
     char* buf_virt;
     char* buf_phys;
-    size_t size, nmemb;
-    int fd;
-    int pos;
-    uint64_t offset;
+    size_t size;
 
     switch(hvc_number){
-		case SSE_FOPEN_HVC_NR:
-
-            filename_virt = (char*)x0;
-            mode_virt     = (char*)x1;
-
-            filename_phys = (char*)ipa_to_phys(current, (uint64_t)filename_virt);
-            mode_phys     = (char*)ipa_to_phys(current, (uint64_t)mode_virt);
-
-			return_val = sse_hvc_fopen_handler(filename_phys, mode_phys);
-			break;
 		case SSE_FREAD_HVC_NR:
 
-            buf_virt    = (char*)x0;
-            size        = (size_t)x1;
-            nmemb       = (size_t)x2;
-            fd          = (int)x3;
+            filename_virt = (char*) x0;
+            buf_virt    = (char*)x1;
+            size        = (size_t)x2;
 
+            filename_phys = (char*) ipa_to_phys(current, (uint64_t) filename_virt);
             buf_phys    = (char*)ipa_to_phys(current, (uint64_t)buf_virt);
 
-			return_val = sse_hvc_fread_handler(buf_phys, size, nmemb, fd);
+			return_val = sse_hvc_fread_handler(filename_phys,buf_phys, size);
 			break;
 		case SSE_FWRITE_HVC_NR:
 
-            buf_virt        = (char*)x0;
-            size            = (size_t)x1;
-            nmemb           = (size_t)x2;
-            fd              = (int)x3;
+            filename_virt = (char*) x0;
+            buf_virt    = (char*)x1;
+            size        = (size_t)x2;
 
-            buf_phys        = (char*)ipa_to_phys(current, (uint64_t)buf_virt);
+            filename_phys = (char*) ipa_to_phys(current, (uint64_t) filename_virt);
+            buf_phys    = (char*)ipa_to_phys(current, (uint64_t)buf_virt);
 
-			return_val = sse_hvc_fwrite_handler(buf_phys, size, nmemb, fd);
-			break;
-		case SSE_FSEEK_HVC_NR:
-            fd      = (int)x0;
-            offset  = (uint64_t)x1;
-            pos     = (int)x2;
-			return_val = sse_hvc_fseek_handler(fd, offset, pos);
-			break;
-		case SSE_REWIND_HVC_NR:
-
-            fd = (int)x0;
-			return_val = sse_hvc_rewind_handler(fd);
-			break;
-		case SSE_FCLOSE_HVC_NR:
-            fd = (int)x0;
-			return_val = sse_hvc_fclose_handler(x0);
+			return_val = sse_hvc_fwrite_handler(filename_phys,buf_phys, size);
 			break;
 	}
 
@@ -143,22 +111,9 @@ void sse_hvc_main_handler(uint16_t hvc_number){
 
 }
 
-int  sse_hvc_fopen_handler(const char* filename, const char* mode){
-        
+int  sse_hvc_fread_handler(char* filename, char* buf, size_t size){
 
 }
-int  sse_hvc_fread_handler(char* buf, size_t size, size_t nmemb, int fd){
-
-}
-int  sse_hvc_fwrite_handler(char* buf, size_t size, size_t nmemb, int fd){
-
-}
-int  sse_hvc_fseek_handler(int fd, uint64_t offset, int pos){
-
-}
-int  sse_hvc_rewind_handler(int fd){
-
-}
-int  sse_hvc_fclose_handler(int fd){
+int  sse_hvc_fwrite_handler(char* filename, char* buf, size_t size){
 
 }
