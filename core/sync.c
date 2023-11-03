@@ -15,6 +15,7 @@
 #include "stdio.h"
 #include "kstatus.h"
 #include "debug/debug.h"
+#include "sse/sse.h"
 
 
 const char *sync_info[] = {
@@ -119,8 +120,18 @@ void handle_sync_floating_point_access(){
     printf("LOG: Floating point operations not supported.\n");
 }
 
-void handle_sync_hvc(uint64_t hvc_number){
-    // hvc support will be added later
+void handle_sync_hvc(uint16_t hvc_number){
+    
+	/*
+		We need to understand that all the arguments passed on by the guest OS is in its Intermediate Physical Address Space.
+		This is not exactly where its placed in physical RAM (think of virtual memory).
+
+		Hence, we need to translate this first and then it has to be handled.
+		This translation happens inside the HVC handlers and we just pass on the virtual addresses from here.
+	*/
+
+
+	sse_hvc_main_handler(hvc_number);
 }
 
 static void handle_sync_sysreg_read(uint64_t esr_el2){
