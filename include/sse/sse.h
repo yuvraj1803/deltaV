@@ -11,6 +11,7 @@
 #define SSE_REWIND_HVC_NR       4
 #define SSE_FCLOSE_HVC_NR       5
 
+void sse_init();
 void sse_hvc_main_handler(uint16_t hvc_number);
 
 int  sse_hvc_fopen_handler(const char* filename, const char* mode);
