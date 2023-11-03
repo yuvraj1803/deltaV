@@ -1,6 +1,10 @@
 #include "sse/sse.h"
 #include "core/vm.h"
 #include "mm/paging.h"
+#include "fs/ff.h"
+#include "config.h"
+#include "stdio.h"
+#include "memory.h"
 
 /*
 
@@ -17,6 +21,29 @@
 */
 
 extern struct vm* current;
+extern struct vm* vmlist[CONFIG_MAX_VMs];
+extern int total_vms;
+
+FIL* sse_files[CONFIG_MAX_SSE_FILES];
+
+
+
+void sse_init(){
+
+    for(int file=0; file < CONFIG_MAX_SSE_FILES; file++){
+        sse_files[file] = 0;
+    }
+
+    for(int i=0;i<total_vms;i++){
+        if(vmlist[i]->sse_enabled){
+            if(!sse_sandbox_init(vmlist[i])) printf("LOG: SSE Sandbox initialised for VM: %s\n", vmlist[i]->name);
+            else printf("LOG: SSE Sandbox initialization FAILED for VM: %s\n", vmlist[i]->name);
+        }
+    }
+
+
+    log("Secure Storage Enclave (SSE) initialised.");
+}
 
 void sse_hvc_main_handler(uint16_t hvc_number){
 
@@ -97,8 +124,7 @@ void sse_hvc_main_handler(uint16_t hvc_number){
 }
 
 int  sse_hvc_fopen_handler(const char* filename, const char* mode){
-
-    printf("file: %s Mode: %s\n", filename, mode);
+        
 
 }
 int  sse_hvc_fread_handler(char* buf, size_t size, size_t nmemb, int fd){
