@@ -52,6 +52,8 @@ struct vm{
 	uint64_t load_addr; // in virtual memory
 	uint64_t entry; // this is where vm will start executing
 	uint64_t sp_init; // this is the initial stack pointer of the vm.
+
+	uint8_t sse_enabled;
 };
 
 #endif
