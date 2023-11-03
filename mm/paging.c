@@ -81,6 +81,23 @@ int8_t map_virtual_address_space(struct vm* _vm){
 	return SUCCESS;
 }
 
+uint64_t ipa_to_phys(struct vm* vm,	uint64_t ipa){ 	// returns physical page base addr when given IPA of given VM.
+
+	uint64_t ipa_page_offset = ipa & (PAGE_SIZE - 1);
+	uint64_t ipa_page		 = ipa &~(PAGE_SIZE - 1);
+
+	uint64_t lv1_table = vm->virtual_address_space->lv1_table;	// 512 GB block
+	
+	uint64_t lv2_table = ((uint64_t*)lv1_table)[0] & ~(PAGE_SIZE - 1);				// 1 GB block
+	uint64_t lv2_index = (ipa_page >> LV2_SHIFT) & (TABLE_ENTRIES - 1);
+
+	uint64_t lv3_table = ((uint64_t*)lv2_table)[lv2_index] & ~(PAGE_SIZE - 1);
+	uint64_t lv3_index = (ipa_page >> PAGE_SHIFT) & (TABLE_ENTRIES - 1);
+
+
+	return (((uint64_t*)lv3_table)[lv3_index] & ~(PAGE_SIZE-1)) + ipa_page_offset;
+
+}
 
 void mmu_init(){
 
