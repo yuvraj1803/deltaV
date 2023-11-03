@@ -91,29 +91,6 @@ void prepare_vm(){
 	
 }
 
-static char* vm_get_sse_dir_name(char* name){
-
-	int filename_size = 0;
-	int name_len = strlen(name);
-
-	for(int i=0;i<name_len;i++){
-		if(name[i] == '/'){
-			filename_size = 0;
-		}else filename_size++;
-	}
-
-	char* filename = malloc(filename_size+1);
-	for(int i=1;i<=filename_size;i++){
-		filename[i] = name[name_len - filename_size + i - 1];
- 	}
-
-	filename[0] = '/';
-
-	// if VM filename is /guests/vm.bin, we return /vm.bin
-
-	return filename;
-}
-
 struct vm* vm_init(char* name, uint64_t sp, uint64_t entry, uint64_t base){
 
 	if(total_vms == CONFIG_MAX_VMs){
@@ -128,7 +105,6 @@ struct vm* vm_init(char* name, uint64_t sp, uint64_t entry, uint64_t base){
 		return 0;
 	}
 	strcpy(_vm->name, name);
-	strcpy(_vm->sse_dir_name, vm_get_sse_dir_name(name));	// this returns the vm file's name without the entire path.
 
 	_vm->vmid = total_vms;
 

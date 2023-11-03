@@ -37,7 +37,6 @@ struct pt_regs{
 
 struct vm{
 	char name[128];
-	char sse_dir_name[64];
 	uint8_t vmid;
 	uint8_t state;
 	struct vaddr_space* virtual_address_space;
