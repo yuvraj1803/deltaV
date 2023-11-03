@@ -86,7 +86,7 @@ uint64_t ipa_to_phys(struct vm* vm,	uint64_t ipa){ 	// returns physical page bas
 	uint64_t ipa_page_offset = ipa & (PAGE_SIZE - 1);
 	uint64_t ipa_page		 = ipa &~(PAGE_SIZE - 1);
 
-	uint64_t lv1_table = vm->virtual_address_space->lv1_table;	// 512 GB block
+	uint64_t lv1_table = (uint64_t)vm->virtual_address_space->lv1_table;	// 512 GB block
 	
 	uint64_t lv2_table = ((uint64_t*)lv1_table)[0] & ~(PAGE_SIZE - 1);				// 1 GB block
 	uint64_t lv2_index = (ipa_page >> LV2_SHIFT) & (TABLE_ENTRIES - 1);
