@@ -83,8 +83,9 @@ DRESULT disk_write (
 )
 {
 	
+	if(sd_writeblock(sector, buff, count) < 0) return RES_ERROR;
 
-	return RES_PARERR;
+	return RES_OK;
 }
 
 #endif
