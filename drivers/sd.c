@@ -63,6 +63,8 @@
 #define CMD_READ_SINGLE     0x11220010
 #define CMD_READ_MULTI      0x12220032
 #define CMD_SET_BLOCKCNT    0x17020000
+#define CMD_WRITE_SINGLE    0x18220000
+#define CMD_WRITE_MULTI     0x19220022
 #define CMD_APP_CMD         0x37000000
 #define CMD_SET_BUS_WIDTH   (0x06020000|CMD_NEED_APP)
 #define CMD_SEND_OP_COND    (0x29020000|CMD_NEED_APP)
@@ -70,6 +72,7 @@
 
 // STATUS register settings
 #define SR_READ_AVAILABLE   0x00000800
+#define SR_WRITE_AVAILABLE  0x00000400
 #define SR_DAT_INHIBIT      0x00000002
 #define SR_CMD_INHIBIT      0x00000001
 #define SR_APP_CMD          0x00000020
@@ -78,7 +81,10 @@
 #define INT_DATA_TIMEOUT    0x00100000
 #define INT_CMD_TIMEOUT     0x00010000
 #define INT_READ_RDY        0x00000020
+#define INT_WRITE_RDY       0x00000010
+#define INT_DATA_DONE       0x00000002
 #define INT_CMD_DONE        0x00000001
+
 
 #define INT_ERROR_MASK      0x017E8000
 
@@ -172,6 +178,44 @@ int sd_cmd(unsigned int code, unsigned int arg)
     // make gcc happy
     return 0;
 }
+
+/**
+ * write a block to the sd card and return the number of bytes written
+ * returns 0 on error.
+ */
+
+int sd_writeblock(unsigned int lba, unsigned char *buffer, unsigned int num)
+{
+    int r,c=0,d;
+    if(num<1) num=1;
+    // uart_write("sd_writeblock lba ");uart_write_hex(lba);uart_write(" num ");uart_write_hex(num);uart_write("\n");
+    if(sd_status(SR_DAT_INHIBIT | SR_WRITE_AVAILABLE)) {sd_err=SD_TIMEOUT; return 0;}
+    unsigned int *buf=(unsigned int *)buffer;
+    if(sd_scr[0] & SCR_SUPP_CCS) {
+        if(num > 1 && (sd_scr[0] & SCR_SUPP_SET_BLKCNT)) {
+            sd_cmd(CMD_SET_BLOCKCNT,num);
+            if(sd_err) return 0;
+        }
+        *EMMC_BLKSIZECNT = (num << 16) | 512;
+        sd_cmd(num == 1 ? CMD_WRITE_SINGLE : CMD_WRITE_MULTI,lba);
+        if(sd_err) return 0;
+    } else {
+        *EMMC_BLKSIZECNT = (1 << 16) | 512;
+    }
+    while( c < num ) {
+        if(!(sd_scr[0] & SCR_SUPP_CCS)) {
+            sd_cmd(CMD_WRITE_SINGLE,(lba+c)*512);
+            if(sd_err) return 0;
+        }
+        if((r=sd_int(INT_WRITE_RDY))){/*uart_write("\rERROR: Timeout waiting for ready to write\n");*/sd_err=r;return 0;}
+        for(d=0;d<128;d++) *EMMC_DATA = buf[d];
+        c++; buf+=128;
+    }
+    if((r=sd_int(INT_DATA_DONE))){/*uart_write("\rERROR: Timeout waiting for data done\n");*/sd_err=r;return 0;}
+    if( num > 1 && !(sd_scr[0] & SCR_SUPP_SET_BLKCNT) && (sd_scr[0] & SCR_SUPP_CCS)) sd_cmd(CMD_STOP_TRANS,0);
+    return sd_err!=SD_OK || c!=num? 0 : num*512;
+}
+
 
 /**
  * read a block from sd card and return the number of bytes read
