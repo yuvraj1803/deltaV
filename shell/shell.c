@@ -58,7 +58,7 @@ static void add_shell_command(char command[], void (*command_handler)){
 
 void shell_run(){
     if(!SHELL_ACTIVE_BEFORE){
-        printf("deltaV >>> ");
+        printf("\ndeltaV >>> ");
         SHELL_ACTIVE_BEFORE = 1;
     }
     char shell_input[CONFIG_MAX_SHELL_COMMAND_SIZE];
@@ -74,7 +74,7 @@ void shell_run(){
     }
 
     if(!command_recognised) printf("command not recognised.\n");
-    if(vm_connected_to_uart == VMID_SHELL) printf("deltaV >>> ");
+    if(vm_connected_to_uart == VMID_SHELL) printf("\ndeltaV >>> ");
 }
 
 void shell_init(){
