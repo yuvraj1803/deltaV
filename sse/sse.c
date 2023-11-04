@@ -29,7 +29,7 @@ extern int total_vms;
 
 FIL* sse_files[CONFIG_MAX_SSE_FILES];
 
-static char* make_sse_vm_dir_name(uint8_t vmid){
+static char* get_sse_vm_dir_name(uint8_t vmid){
     char* name = (char*) malloc(6); // 6 because VMID is <= 255. So VM_255 is the largest string.
     // All this drama is unnecessary. Even though I am asking for 6 bytes, malloc will return an entire page ;). (4096bytes).
 
@@ -39,11 +39,29 @@ static char* make_sse_vm_dir_name(uint8_t vmid){
     return name;
 }
 
+static char* get_sse_vm_dir_path(uint8_t vmid){
+    char* name = (char*) malloc(6); 
+
+    strcpy(name, "/VM_");
+    strcat(name, itoa(vmid));
+
+    return name;
+}
+
+
+
 static int sse_sandbox_init(struct vm* vm){
 
-    f_chdir("/");
-    f_mkdir(make_sse_vm_dir_name(vm->vmid));    // this will create a directory with VM_{VMID}.
+    if(f_chdir("/") != FR_OK) return -1;
+    if(f_mkdir(get_sse_vm_dir_name(vm->vmid)) != FR_OK) return -1;    // this will create a directory with VM_{VMID}.
                                                 // example: 'VM_1' for VM with id '1'.
+
+    return 0;
+}
+
+static int sse_switch_to_vm_sandbox(struct vm* vm){
+
+    if(f_chdir(get_sse_vm_dir_path(vm->vmid)) != FR_OK) return -1;
 
     return 0;
 }
@@ -56,7 +74,7 @@ void sse_init(){
 
     for(int i=0;i<total_vms;i++){
         if(vmlist[i]->sse_enabled){
-            if(!sse_sandbox_init(vmlist[i])) printf("LOG: SSE Sandbox initialised for VM: %s\n", vmlist[i]->name);
+            if(sse_sandbox_init(vmlist[i]) == 0) printf("LOG: SSE Sandbox initialised for VM: %s\n", vmlist[i]->name);
             else printf("LOG: SSE Sandbox initialization FAILED for VM: %s\n", vmlist[i]->name);
         }
     }
@@ -112,8 +130,30 @@ void sse_hvc_main_handler(uint16_t hvc_number){
 }
 
 int  sse_hvc_fread_handler(char* filename, char* buf, size_t size){
+    FIL file;
+
+    sse_switch_to_vm_sandbox(current);
+
+    if(f_open(&file, strcat(get_sse_vm_dir_path(current->vmid), filename), FA_READ) != FR_OK) return -1;
+    if(f_read(&file, (void*)buf, size,NULL) != FR_OK) return -1;
+
+    f_close(&file);
+    return 0;
 
 }
 int  sse_hvc_fwrite_handler(char* filename, char* buf, size_t size){
 
+    FIL file;
+
+    if(sse_switch_to_vm_sandbox(current) < 0) return -1;
+
+    char* eff_file_path = get_sse_vm_dir_path(current->vmid);
+    strcat(eff_file_path, filename);
+
+    if(f_open(&file, eff_file_path, FA_WRITE | FA_CREATE_NEW) != FR_OK) return -1;
+    if(f_write(&file, buf, size, NULL) != FR_OK) return -1;
+
+    f_close(&file);
+
+    return 0;
 }
