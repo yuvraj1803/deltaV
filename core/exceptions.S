@@ -148,7 +148,7 @@ vtable:
   	handle_unsupported_interrupt LOWER_EL_A64_SERROR
 
  lower_el_a32_sync:
-  	handle_unsupported_interrupt LOWER_EL_A32_SYNC
+  	handle_sync_interrupt 
  lower_el_a32_irq:
   	handle_unsupported_interrupt LOWER_EL_A32_IRQ
  lower_el_a32_fiq:
