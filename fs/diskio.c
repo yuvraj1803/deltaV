@@ -102,6 +102,6 @@ DRESULT disk_ioctl (
 )
 {
 
-	return RES_PARERR;
+	return FR_OK;
 }
 
