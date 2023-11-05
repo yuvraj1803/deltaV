@@ -27,8 +27,6 @@ extern struct vm* current;
 extern struct vm* vmlist[CONFIG_MAX_VMs];
 extern int total_vms;
 
-FIL* sse_files[CONFIG_MAX_SSE_FILES];
-
 static char* get_sse_vm_dir_name(uint8_t vmid){
     char* name = (char*) malloc(6); // 6 because VMID is <= 255. So VM_255 is the largest string.
     // All this drama is unnecessary. Even though I am asking for 6 bytes, malloc will return an entire page ;). (4096bytes).
@@ -67,10 +65,6 @@ static int sse_switch_to_vm_sandbox(struct vm* vm){
 }
 
 void sse_init(){
-
-    for(int file=0; file < CONFIG_MAX_SSE_FILES; file++){
-        sse_files[file] = 0;
-    }
 
     for(int i=0;i<total_vms;i++){
         if(vmlist[i]->sse_enabled){
