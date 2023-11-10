@@ -9,8 +9,8 @@
 #include "string.h"
 #include "mm/mm.h"
 
-char* itoa(int num){
-	    char* num_a = (char*) malloc(15); // assuming max 15 digit number.
+char* itoa(long long num){
+	    char* num_a = (char*) malloc(20); // assuming max 20 digit number.
 
 	    int digits = 0;
 	    int temp = num;
