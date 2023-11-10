@@ -20,7 +20,7 @@
 
 extern struct vm* vmlist[CONFIG_MAX_VMs];
 extern int total_vms;
-struct vm* current;
+volatile struct vm* current;
 
 void sched_init(){
 
@@ -86,7 +86,7 @@ void schedule(){
 		}
 		nextvm = 0;
 	}
-	struct vm* prev = current;
+	struct vm* prev = (struct vm*) current;
 	current = vmlist[nextvm];
 
 	if(prev == current){	// this will happen when there is only one VM running.
@@ -100,5 +100,5 @@ void schedule(){
 	debug("Context switch: %s  -->  %s\n", prev->name, current->name);
 
 	load_vttbr_el2(current->vmid, (uint64_t)current->virtual_address_space->lv1_table);
-	switch_context(&prev->cpu.context, &current->cpu.context);
+	switch_context(&prev->cpu.context, (struct context*)&current->cpu.context);
 }
