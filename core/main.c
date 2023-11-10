@@ -37,6 +37,7 @@ void main(void){
 	
 	vm_init("/guests/deltaOS/kernel8.img", 0x0,0x80000,0x80000);
 	vm_init("/guests/deltaOS/kernel8.img", 0x0,0x80000,0x80000);
+
 	
 	sse_init();		// Secure Storage Enclave
 

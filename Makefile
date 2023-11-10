@@ -1,6 +1,6 @@
 INC = ./include
 LIB = ./lib/include
-TOOLCHAIN=aarch64-linux-gnu-
+TOOLCHAIN=@aarch64-linux-gnu-
 CC = 		$(TOOLCHAIN)gcc
 AS = 		$(TOOLCHAIN)as
 LD = 		$(TOOLCHAIN)ld
@@ -45,35 +45,47 @@ OBJ += ./build/sse/sse.o
 all: sdcard kernel8.img
 
 ./build/core/%.o: ./core/%.c
+	@echo [compiling] $@
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ./build/mm/%.o: ./mm/%.c
+	@echo [compiling] $@
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ./build/boot/%.S.o: ./boot/%.S
+	@echo [compiling] $@
 	$(CC) $(ASMFLAGS) -c $< -o $@
 
 ./build/core/%.S.o : ./core/%.S
+	@echo [compiling] $@
 	$(CC) $(ASMFLAGS) -c $< -o $@
 
 ./build/mm/%.S.o: ./mm/%.S
+	@echo [compiling] $@
 	$(CC) $(ASMFLAGS) -c $< -o $@	
 
 ./build/drivers/%.o: ./drivers/%.c
+	@echo [compiling] $@
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ./build/fs/%.o: ./fs/%.c
+	@echo [compiling] $@
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ./build/lib/%.o: ./lib/src/%.c
+	@echo [compiling] $@
 	$(CC) $(CFLAGS) -c $< -o $@
+
 ./build/shell/%.o : ./shell/%.c
+	@echo [compiling] $@
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ./build/debug/%.o : ./debug/%.c
+	@echo [compiling] $@
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ./build/sse/%.o : ./sse/%.c
+	@echo [compiling] $@
 	$(CC) $(CFLAGS) -c $< -o $@
 
 
@@ -97,20 +109,20 @@ debug:	sdcard kernel8.img
 qemu: 
 	qemu-system-aarch64 -M raspi3b -nographic -serial null -serial mon:stdio -m 1024 -kernel ./kernel8.img -drive file=./sdcard.img,if=sd,format=raw
 
-.PHONY: sdcard
+.SILENT: sdcard
 sdcard:	deltaOS
 	sudo modprobe nbd max_part=8
 	qemu-img create sdcard.img 128m
 	sudo qemu-nbd -c /dev/nbd0 --format=raw sdcard.img 
 	(echo o; echo n; echo p; echo 1; echo ; echo ;echo w; echo q) | sudo fdisk /dev/nbd0
-	sudo mkfs.fat -F32 /dev/nbd0p1
+	@sudo mkfs.fat -F32 /dev/nbd0p1
 	mkdir temp || true
 	sudo mount -o user /dev/nbd0p1 temp/
 	sudo cp  -r ./guests temp/
 	sleep 1s
 	sudo umount temp/
 	rmdir temp/ || true
-	sudo qemu-nbd -d /dev/nbd0
+	@sudo qemu-nbd -d /dev/nbd0
 	(echo t; echo c; echo w; echo q) | sudo fdisk sdcard.img
 
 .PHONY: objdump
