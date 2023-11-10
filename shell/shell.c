@@ -13,6 +13,7 @@
 #include "string.h"
 #include "core/vm.h"
 #include "drivers/uart.h"
+#include "drivers/timer.h"
 #include "stdlib.h"
 
 // prototypes for shell commands
@@ -91,12 +92,9 @@ void shell_init(){
 // ===================================== Shell Commands =================================================
 
 void list(){
-    for(int vm=0;vm<total_vms;vm++){
-        printf("VMID: %d\n", vmlist[vm]->vmid);
-        printf("Name: %s\n", vmlist[vm]->name);
-        printf("State: %s\n", vm_state_to_string(vmlist[vm]->state));
-        printf("Size: %d\n", vmlist[vm]->vmdata_size);
-        printf("\n");
+    printf("VMID\tName\t\t\t\tState\tVirtual Time(ms)\n");
+    for(int vm=1;vm<total_vms;vm++){
+        printf("%d\t%s\t%s\t%d\n", vmlist[vm]->vmid,vmlist[vm]->name,vm_state_to_string(vmlist[vm]->state),get_virt_time(vmlist[vm]));
     }
 }
 
