@@ -405,6 +405,9 @@ void vcpu_enter(){
     // in this line we check which timers are enabled in the first place and only update TIMER CS for them.
     current->cpu.system_timer_regs.cs |= (~current->cpu.system_timer_regs.cs & timers_matched); 
 
+    // switch IPA to current VM's IPA.
+    load_vttbr_el2(current->vmid, current->virtual_address_space->lv1_table);
+
 }
 
 uint8_t check_irq_pending(struct vm* _vm){
