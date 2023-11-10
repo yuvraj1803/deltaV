@@ -406,7 +406,7 @@ void vcpu_enter(){
     current->cpu.system_timer_regs.cs |= (~current->cpu.system_timer_regs.cs & timers_matched); 
 
     // switch IPA to current VM's IPA.
-    load_vttbr_el2(current->vmid, current->virtual_address_space->lv1_table);
+    load_vttbr_el2(current->vmid, (uint64_t)current->virtual_address_space->lv1_table);
 
 }
 
