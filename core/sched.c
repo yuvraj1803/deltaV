@@ -99,5 +99,6 @@ void schedule(){
 
 	debug("Context switch: %s  -->  %s\n", prev->name, current->name);
 
+	load_vttbr_el2(current->vmid, (uint64_t)current->virtual_address_space->lv1_table);
 	switch_context(&prev->cpu.context, &current->cpu.context);
 }
