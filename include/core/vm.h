@@ -26,6 +26,7 @@ char* vm_state_to_string(uint8_t state);
 struct vm_info{
 	uint32_t quanta_remaining;
 	uint32_t prio;
+	uint32_t ticks_passed;
 };
 
 struct pt_regs{

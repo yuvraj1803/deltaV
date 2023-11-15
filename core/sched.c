@@ -47,6 +47,7 @@ void sched_init(){
 void scheduler_tick(){
 	
 	current->info.quanta_remaining--;
+	current->info.ticks_passed++;
 	
 	if(current->info.quanta_remaining <= 0){
 		current->info.quanta_remaining = 0;
