@@ -41,6 +41,9 @@ void main(void){
 	
 	sse_init();		// Secure Storage Enclave
 
+
+	printf("\nPress Enter for Shell\n\n");
+
 	while(1){
 		__disable_irq();
 		schedule();
