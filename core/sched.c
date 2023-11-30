@@ -8,6 +8,7 @@
 #include "core/sched.h"
 #include "core/vm.h"
 #include "core/vcpu.h"
+#include "drivers/uart.h"
 #include "config.h"
 #include "memory.h"
 #include "stdio.h"
@@ -83,7 +84,7 @@ void schedule(){
 
 	if(nextvm == -1){ // all vms have no quanta remaining.
 		for(int i=0;i<total_vms;i++){
-			vmlist[i]->info.quanta_remaining = vmlist[i]->info.prio;
+			vmlist[i]->info.quanta_remaining = (i == vm_connected_to_uart) ? vmlist[i]->info.prio * 3 : vmlist[i]->info.prio;
 		}
 		nextvm = 0;
 	}
