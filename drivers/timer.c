@@ -13,8 +13,7 @@
 #include "core/vm.h"
 
 
-const uint32_t timer_interval = (1000000/1000); // timer runs at 1MHz
-// (1000000/1000) is number of cycles in 1 ms)
+const uint32_t timer_interval = (400000); 
 
 void timer_info(){
 	printf("CS: %x\n", mm_r32(TIMER_CS));
