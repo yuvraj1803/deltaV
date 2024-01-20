@@ -95,7 +95,6 @@ kernel8.img : $(OBJ)
 
 .PHONY: deltaOS
 deltaOS:
-	cd ./guests/deltaOS/ && make clean
 	cd ./guests/deltaOS/ && make
 
 .PHONY: run
