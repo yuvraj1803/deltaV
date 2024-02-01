@@ -2,7 +2,7 @@ ENTRY(_start)
 
 
 SECTIONS{
-	. = 0x80000;
+	. = DEFINED(OMEGA) ? 0x1000000 : 0x80000;
 	__delta_start = .;
 	.text.boot : { *(.text.boot) }
 	

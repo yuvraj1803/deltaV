@@ -89,8 +89,12 @@ all: sdcard kernel8.img
 	$(CC) $(CFLAGS) -c $< -o $@
 
 
+ifdef OMEGA
+OMEGA_DEFINED_ENTRY = --defsym OMEGA=1
+endif
+
 kernel8.img : $(OBJ)
-	$(LD) -T linker.ld -o ./deltaV.elf $(OBJ_C) $(OBJ)
+	$(LD) $(OMEGA_DEFINED_ENTRY) -T linker.ld -o ./deltaV.elf $(OBJ_C) $(OBJ)
 	$(OBJCOPY) ./deltaV.elf -O binary ./kernel8.img
 
 .PHONY: deltaOS
