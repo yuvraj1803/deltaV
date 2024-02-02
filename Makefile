@@ -42,7 +42,7 @@ OBJ += ./build/debug/debug.o
 OBJ += ./build/sse/sse.o
 
 .PHONY: all
-all: sdcard kernel8.img
+all: deltaOS kernel8.img
 
 ./build/core/%.o: ./core/%.c
 	@echo [CC] $@
@@ -112,6 +112,7 @@ debug:	sdcard kernel8.img
 qemu: 
 	qemu-system-aarch64 -M raspi3b -nographic -serial null -serial mon:stdio -m 1024 -kernel ./kernel8.img -drive file=./sdcard.img,if=sd,format=raw
 
+ifndef OMEGA
 .SILENT: sdcard
 sdcard:	deltaOS
 	sudo modprobe nbd max_part=8
@@ -127,6 +128,10 @@ sdcard:	deltaOS
 	rmdir temp/ || true
 	@sudo qemu-nbd -d /dev/nbd0
 	(echo t; echo c; echo w; echo q) | sudo fdisk sdcard.img
+else
+.SILENT: sdcard
+sdcard:
+endif
 
 .PHONY: objdump
 objdump: kernel8.img
