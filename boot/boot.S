@@ -59,14 +59,14 @@ el3_entry:
 
 
 el2_entry:
-	ldr x1, =EL2_STACK_BASE
+	ldr x1, =__delta_start
 	mov sp, x1
 
 	ldr x1, =EL2_HCR		// setup HCR in EL2
 	msr hcr_el2, x1
 
-    	ldr x1, =EL2_SPSR               // setup SPSR in EL2
-    	msr spsr_el2, x1
+	ldr x1, =EL2_SPSR               // setup SPSR in EL2
+	msr spsr_el2, x1
 
 	bl main
 	b halt
