@@ -45,47 +45,47 @@ OBJ += ./build/sse/sse.o
 all: deltaOS kernel8.img
 
 ./build/core/%.o: ./core/%.c
-	@echo [CC] $@
+	@echo CC $@
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ./build/mm/%.o: ./mm/%.c
-	@echo [CC] $@
+	@echo CC $@
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ./build/boot/%.S.o: ./boot/%.S
-	@echo [CC] $@
+	@echo CC $@
 	$(CC) $(ASMFLAGS) -c $< -o $@
 
 ./build/core/%.S.o : ./core/%.S
-	@echo [CC] $@
+	@echo CC $@
 	$(CC) $(ASMFLAGS) -c $< -o $@
 
 ./build/mm/%.S.o: ./mm/%.S
-	@echo [CC] $@
+	@echo CC $@
 	$(CC) $(ASMFLAGS) -c $< -o $@	
 
 ./build/drivers/%.o: ./drivers/%.c
-	@echo [CC] $@
+	@echo CC $@
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ./build/fs/%.o: ./fs/%.c
-	@echo [CC] $@
+	@echo CC $@
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ./build/lib/%.o: ./lib/src/%.c
-	@echo [CC] $@
+	@echo CC $@
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ./build/shell/%.o : ./shell/%.c
-	@echo [CC] $@
+	@echo CC $@
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ./build/debug/%.o : ./debug/%.c
-	@echo [CC] $@
+	@echo CC $@
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ./build/sse/%.o : ./sse/%.c
-	@echo [CC] $@
+	@echo CC $@
 	$(CC) $(CFLAGS) -c $< -o $@
 
 
