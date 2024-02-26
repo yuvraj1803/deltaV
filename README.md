@@ -11,6 +11,8 @@
  # Debug Dependencies
     + gdb-multiarch
  # How to use?
+    + chmod +x install.sh
+    + ./install.sh
     + make run
  # How to Debug?
     + make debug
