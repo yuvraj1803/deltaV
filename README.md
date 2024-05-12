@@ -19,23 +19,6 @@
     + (Another Terminal) gdb-multiarch ./deltaV.elf
     + (gdb) target remote localhost:1234
 
- # EL3 Configuration
-   **SCR.RW** - EL2 is in AArch64.
-   
-   **SCR.HCE** - HVC instructions are enabled.
-   
-   **SCR.NS** - EL0 and EL1 are in Non-Secure State.
-   
-   ------------
-   
-   **SPSR.I** - IRQ interrupts masked on exception to EL3.
-   
-   **SPSR.F**- FIQ interrupts  masked on exception to EL3.
-   
-   **SPSR.A** - SError interrupts masked on exception to EL3.
-   
-   **SPSR.EL2h** - SP_EL2 selected on exception to EL3.
-   
 
 # EL2 Configuration
 
@@ -72,9 +55,7 @@
   **HCR.IMO** - IRQs routed to EL2.
   
   **HCR.FMO**- FIQs routed to EL2.
-  
-  **HCR.SWIO** - Set/Way Instructions Perform A Data Cache Clean.
-  
+    
   **HCR.VM** - Stage 2 translation enabled for EL0&1.
      
    ------------
